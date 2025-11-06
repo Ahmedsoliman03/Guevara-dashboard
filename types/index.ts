@@ -10,6 +10,7 @@ export interface Order {
   createdAt: Date
   accepted?: boolean
   rejected?: boolean
+  
 }
 
 export interface Product {

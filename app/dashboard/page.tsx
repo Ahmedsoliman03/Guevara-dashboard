@@ -3,20 +3,21 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { isAuthenticated } from "@/lib/auth"
-import LoginPage from "@/components/pages/login-page"
+import DashboardLayout from "@/components/layout/dashboard-layout"
 
-export default function Home() {
+export default function DashboardPage() {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
-    if (typeof window !== "undefined" && isAuthenticated()) {
-      router.push("/dashboard")
+    if (typeof window !== "undefined" && !isAuthenticated()) {
+      router.push("/")
     }
   }, [router])
 
   if (!mounted) return null
 
-  return <LoginPage />
+  return <DashboardLayout />
 }
+

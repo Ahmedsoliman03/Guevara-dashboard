@@ -2,36 +2,35 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Formik, Form, Field, ErrorMessage } from "formik"
+import * as yup from "yup"
 import { motion } from "framer-motion"
 import { validateCredentials, setAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
+const loginSchema = yup.object({
+  email: yup.string().email("Invalid email").required("Email is required"),
+  password: yup.string().required("Password is required"),
+})
+
 export default function LoginPage() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setLoading(true)
-
+  const handleSubmit = async (values: { email: string; password: string }, { setSubmitting, setFieldError }: any) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 500))
 
-    if (validateCredentials(email, password)) {
+    if (validateCredentials(values.email, values.password)) {
       setAuthToken("mock-token")
-      // Refresh page to show dashboard
-      window.location.reload()
+      router.push("/dashboard")
     } else {
-      setError("Invalid email or password")
+      setFieldError("password", "Invalid email or password")
     }
 
-    setLoading(false)
+    setSubmitting(false)
   }
 
   return (
@@ -52,53 +51,51 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  type="email"
-                  placeholder="admin@guevara.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={loading}
-                  required
-                />
-              </div>
+            <Formik
+              initialValues={{ email: "", password: "" }}
+              validationSchema={loginSchema}
+              onSubmit={handleSubmit}
+            >
+              {({ isSubmitting, errors, touched }) => (
+                <Form className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Email</label>
+                    <Field
+                      as={Input}
+                      type="email"
+                      name="email"
+                      placeholder="admin@guevara.com"
+                      disabled={isSubmitting}
+                    />
+                    <ErrorMessage name="email" component="div" className="text-sm text-destructive" />
+                  </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Password</label>
-                <Input
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  required
-                />
-              </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Password</label>
+                    <Field
+                      as={Input}
+                      type="password"
+                      name="password"
+                      placeholder="Enter password"
+                      disabled={isSubmitting}
+                    />
+                    <ErrorMessage name="password" component="div" className="text-sm text-destructive" />
+                  </div>
 
-              {error && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="p-3 bg-destructive/10 text-destructive rounded-md text-sm"
-                >
-                  {error}
-                </motion.div>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                      {isSubmitting ? "Signing in..." : "Sign In"}
+                    </Button>
+                  </motion.div>
+                </Form>
               )}
+            </Formik>
 
-              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                <Button type="submit" className="w-full" disabled={loading}>
-                  {loading ? "Signing in..." : "Sign In"}
-                </Button>
-              </motion.div>
-
-              <div className="text-xs text-muted-foreground text-center pt-4">
-                <p>Demo credentials:</p>
-                <p>Email: admin@guevara.com</p>
-                <p>Password: admin123</p>
-              </div>
-            </form>
+            <div className="text-xs text-muted-foreground text-center pt-4">
+              <p>Demo credentials:</p>
+              <p>Email: admin@guevara.com</p>
+              <p>Password: admin123</p>
+            </div>
           </CardContent>
         </Card>
       </motion.div>

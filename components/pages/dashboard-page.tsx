@@ -1,11 +1,19 @@
 "use client"
 
 import { useMemo } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import type { Order, DashboardStats } from "@/types"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { CheckCircle, XCircle, Clock, AlertCircle, Check } from "lucide-react"
+import {
+  CheckmarkCircle24Regular,
+  DismissCircle24Regular,
+  Clock24Regular,
+  Alert24Regular,
+  Checkmark24Regular,
+  Prohibited24Regular,
+} from "@fluentui/react-icons"
 
 interface DashboardPageProps {
   orders: Order[]
@@ -22,11 +30,13 @@ export default function DashboardPage({
   onReject,
   onNavigateToHistory,
 }: DashboardPageProps) {
+  const router = useRouter()
   const stats = useMemo<DashboardStats>(
     () => ({
       pending: orders.filter((o) => o.status === "pending").length,
       inProgress: orders.filter((o) => o.status === "in-progress").length,
       completed: orders.filter((o) => o.status === "completed").length,
+      rejected: orders.filter((o) => o.status === "rejected").length,
     }),
     [orders],
   )
@@ -37,23 +47,30 @@ export default function DashboardPage({
     {
       title: "Pending",
       value: stats.pending,
-      icon: AlertCircle,
+      icon: Alert24Regular,
       color: "bg-yellow-100 dark:bg-yellow-900",
       textColor: "text-yellow-600 dark:text-yellow-300",
     },
     {
       title: "In Progress",
       value: stats.inProgress,
-      icon: Clock,
+      icon: Clock24Regular,
       color: "bg-blue-100 dark:bg-blue-900",
       textColor: "text-blue-600 dark:text-blue-300",
     },
     {
       title: "Completed",
       value: stats.completed,
-      icon: CheckCircle,
+      icon: CheckmarkCircle24Regular,
       color: "bg-green-100 dark:bg-green-900",
       textColor: "text-green-600 dark:text-green-300",
+    },
+    {
+      title: "Rejected",
+      value: stats.rejected,
+      icon: Prohibited24Regular,
+      color: "bg-red-100 dark:bg-red-900",
+      textColor: "text-red-600 dark:text-red-300",
     },
   ]
 
@@ -66,7 +83,7 @@ export default function DashboardPage({
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, idx) => (
           <motion.div
             key={stat.title}
@@ -101,7 +118,13 @@ export default function DashboardPage({
                 <CardDescription>Manage your pending and in-progress orders</CardDescription>
               </div>
               <motion.button
-                onClick={onNavigateToHistory}
+                onClick={() => {
+                  if (onNavigateToHistory) {
+                    onNavigateToHistory()
+                  } else {
+                    router.push("/history")
+                  }
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-sm px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
@@ -178,7 +201,7 @@ export default function DashboardPage({
                         <div className="flex gap-2 pt-4 justify-end">
                           <motion.div whileTap={{ scale: 0.95 }}>
                             <Button size="sm" className="cursor-pointer" onClick={() => onAccept(order.id)}>
-                              <CheckCircle className="w-4 h-4 mr-2" />
+                              <CheckmarkCircle24Regular className="w-4 h-4 mr-2" />
                               Accept
                             </Button>
                           </motion.div>
@@ -189,7 +212,7 @@ export default function DashboardPage({
                               className="cursor-pointer"
                               onClick={() => onReject(order.id)}
                             >
-                              <XCircle className="w-4 h-4 mr-2" />
+                              <DismissCircle24Regular className="w-4 h-4 mr-2" />
                               Reject
                             </Button>
                           </motion.div>
@@ -204,7 +227,7 @@ export default function DashboardPage({
                               className="bg-green-600 hover:bg-green-700 cursor-pointer"
                               onClick={() => onComplete(order.id)}
                             >
-                              <Check className="w-4 h-4 mr-2" />
+                              <Checkmark24Regular className="w-4 h-4 mr-2" />
                               Mark Completed
                             </Button>
                           </motion.div>

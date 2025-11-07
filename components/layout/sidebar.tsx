@@ -1,18 +1,27 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { useEffect, useState, memo, useMemo, useCallback } from "react"
 import { clearAuthToken } from "@/lib/auth"
-import { LayoutDashboard, Plus, Package, LogOut, Moon, Sun, History } from "lucide-react"
+import {
+  Board24Regular,
+  Add24Regular,
+  Box24Regular,
+  SignOut24Regular,
+  WeatherMoon24Regular,
+  WeatherSunny24Regular,
+  History24Regular,
+  FolderAdd24Regular,
+} from "@fluentui/react-icons"
 
-type PageType = "dashboard" | "add-product" | "products" | "history"
+type PageType = "dashboard" | "add-product" | "add-category" | "products" | "history"
 
 interface SidebarProps {
   currentPage: PageType
   onPageChange: (page: PageType) => void
 }
 
-export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
+function Sidebar({ currentPage, onPageChange }: SidebarProps) {
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -22,7 +31,7 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
     setIsDark(prefersDark)
   }, [])
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     const html = document.documentElement
     const newIsDark = !html.classList.contains("dark")
 
@@ -35,19 +44,23 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
     }
 
     setIsDark(newIsDark)
-  }
+  }, [])
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     clearAuthToken()
     window.location.reload()
-  }
+  }, [])
 
-  const menuItems = [
-    { label: "Dashboard", icon: LayoutDashboard, page: "dashboard" as PageType },
-    { label: "Add Product", icon: Plus, page: "add-product" as PageType },
-    { label: "Products", icon: Package, page: "products" as PageType },
-    { label: "History", icon: History, page: "history" as PageType },
-  ]
+  const menuItems = useMemo(
+    () => [
+      { label: "Dashboard", icon: Board24Regular, page: "dashboard" as PageType },
+      { label: "Add Product", icon: Add24Regular, page: "add-product" as PageType },
+      { label: "Add Category", icon: FolderAdd24Regular, page: "add-category" as PageType },
+      { label: "Products", icon: Box24Regular, page: "products" as PageType },
+      { label: "History", icon: History24Regular, page: "history" as PageType },
+    ],
+    [],
+  )
 
   if (!mounted) return null
 
@@ -94,12 +107,12 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
         >
           {isDark ? (
             <>
-              <Sun className="w-5 h-5" />
+              <WeatherSunny24Regular className="w-5 h-5" />
               <span>Light Mode</span>
             </>
           ) : (
             <>
-              <Moon className="w-5 h-5" />
+              <WeatherMoon24Regular className="w-5 h-5" />
               <span>Dark Mode</span>
             </>
           )}
@@ -111,10 +124,16 @@ export default function Sidebar({ currentPage, onPageChange }: SidebarProps) {
           whileTap={{ scale: 0.95 }}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-destructive hover:bg-destructive/10 transition-all"
         >
-          <LogOut className="w-5 h-5" />
+          <SignOut24Regular className="w-5 h-5" />
           <span>Logout</span>
         </motion.button>
       </div>
     </motion.aside>
   )
 }
+
+// Memoize sidebar to prevent rebuilds on route changes - only re-renders when currentPage changes
+export default memo(Sidebar, (prevProps, nextProps) => {
+  // Only re-render if currentPage actually changed
+  return prevProps.currentPage === nextProps.currentPage && prevProps.onPageChange === nextProps.onPageChange
+})

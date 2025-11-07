@@ -1,0 +1,80 @@
+import * as yup from "yup"
+
+export const addProductSchema = yup.object({
+  name: yup.string().required("Product name is required"),
+  category: yup
+    .string()
+    .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
+    .required("Category is required"),
+  description: yup.string().required("Description is required"),
+  image: yup
+    .mixed<File>()
+    .required("Product image is required")
+    .test("fileSize", "Image size must be less than 5MB", (value) => {
+      if (!value || !(value instanceof File)) return false
+      return value.size <= 5 * 1024 * 1024
+    })
+    .test("fileType", "Only image files are allowed", (value) => {
+      if (!value || !(value instanceof File)) return false
+      return value.type.startsWith("image/")
+    }),
+  isSale: yup.boolean().required(),
+  salePercentage: yup.number().when("isSale", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required("Sale percentage is required when sale is enabled")
+        .min(1, "Sale percentage must be at least 1%")
+        .max(100, "Sale percentage cannot exceed 100%"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  oldPrice: yup.number().when("isSale", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required("Original price is required when sale is enabled")
+        .min(0.01, "Original price must be greater than 0"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  currentPrice: yup.number().when("isSale", {
+    is: true,
+    then: (schema) =>
+      schema
+        .required("Sale price is required when sale is enabled")
+        .min(0.01, "Sale price must be greater than 0"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  price: yup.number().when("isSale", {
+    is: false,
+    then: (schema) =>
+      schema
+        .required("Price is required")
+        .min(0.01, "Price must be greater than 0"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+})
+
+export type AddProductFormData = yup.InferType<typeof addProductSchema>
+
+export const addCategorySchema = yup.object({
+  name: yup.string().required("Category name is required"),
+  numberOfProducts: yup
+    .number()
+    .required("Number of products is required")
+    .min(0, "Number of products cannot be negative")
+    .integer("Number of products must be a whole number"),
+  photo: yup
+    .mixed<File>()
+    .required("Category photo is required")
+    .test("fileSize", "Image size must be less than 5MB", (value) => {
+      if (!value || !(value instanceof File)) return false
+      return value.size <= 5 * 1024 * 1024
+    })
+    .test("fileType", "Only image files are allowed", (value) => {
+      if (!value || !(value instanceof File)) return false
+      return value.type.startsWith("image/")
+    }),
+})
+
+export type AddCategoryFormData = yup.InferType<typeof addCategorySchema>
+

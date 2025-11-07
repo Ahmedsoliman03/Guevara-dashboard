@@ -36,4 +36,13 @@ export interface DashboardStats {
   pending: number
   inProgress: number
   completed: number
+  rejected: number
+}
+
+export interface Category {
+  id: string
+  name: string
+  numberOfProducts: number
+  photo: string
+  createdAt: Date
 }

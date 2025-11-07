@@ -1,22 +1,45 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import Sidebar from "@/components/layout/sidebar"
 import DashboardPage from "@/components/pages/dashboard-page"
 import AddProductPage from "@/components/pages/add-product-page"
+import AddCategoryPage from "@/components/pages/add-category-page"
 import ProductsPage from "@/components/pages/products-page"
 import HistoryPage from "@/components/pages/history-page"
 import { mockOrders } from "@/lib/mock-data"
 import type { Order } from "@/types"
-import { Menu, X } from "lucide-react"
+import { Navigation24Regular, Dismiss24Regular } from "@fluentui/react-icons"
 
-type PageType = "dashboard" | "add-product" | "products" | "history"
+type PageType = "dashboard" | "add-product" | "add-category" | "products" | "history"
 
-export default function DashboardLayout() {
-  const [currentPage, setCurrentPage] = useState<PageType>("dashboard")
+interface DashboardLayoutProps {
+  initialPage?: PageType
+}
+
+export default function DashboardLayout({ initialPage }: DashboardLayoutProps) {
+  const pathname = usePathname()
+  const router = useRouter()
+  const [currentPage, setCurrentPage] = useState<PageType>(initialPage || "dashboard")
   const [orders, setOrders] = useState<Order[]>(mockOrders)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  useEffect(() => {
+    // Sync current page with pathname
+    if (pathname) {
+      const pageMap: Record<string, PageType> = {
+        "/dashboard": "dashboard",
+        "/add-product": "add-product",
+        "/add-category": "add-category",
+        "/products": "products",
+        "/history": "history",
+      }
+      const page = pageMap[pathname] || "dashboard"
+      setCurrentPage(page)
+    }
+  }, [pathname])
 
   const handleAccept = (orderId: string) => {
     setOrders(
@@ -36,10 +59,20 @@ export default function DashboardLayout() {
     switch (currentPage) {
       case "add-product":
         return <AddProductPage />
+      case "add-category":
+        return <AddCategoryPage />
       case "products":
         return <ProductsPage />
       case "history":
-        return <HistoryPage orders={orders} onNavigateToDashboard={() => setCurrentPage("dashboard")} />
+        return (
+          <HistoryPage
+            orders={orders}
+            onNavigateToDashboard={() => {
+              setCurrentPage("dashboard")
+              router.push("/dashboard")
+            }}
+          />
+        )
       default:
         return (
           <DashboardPage
@@ -56,12 +89,20 @@ export default function DashboardLayout() {
   const handlePageChange = (page: PageType) => {
     setCurrentPage(page)
     setSidebarOpen(false)
+    const routeMap: Record<PageType, string> = {
+      dashboard: "/dashboard",
+      "add-product": "/add-product",
+      "add-category": "/add-category",
+      products: "/products",
+      history: "/history",
+    }
+    router.push(routeMap[page])
   }
 
   return (
     <div className="flex h-screen bg-background">
-      {/* Desktop Sidebar */}
-      <div className="hidden md:block">
+      {/* Desktop Sidebar - Fixed (doesn't rebuild on route changes) */}
+      <div className="hidden md:block fixed left-0 top-0 h-screen z-30">
         <Sidebar currentPage={currentPage} onPageChange={handlePageChange} />
       </div>
 
@@ -90,7 +131,7 @@ export default function DashboardLayout() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="flex-1 overflow-auto flex flex-col"
+        className="flex-1 overflow-auto flex flex-col md:ml-64"
       >
         <div className="md:hidden p-4 border-b border-border bg-background flex items-center">
           <motion.button
@@ -99,7 +140,7 @@ export default function DashboardLayout() {
             whileTap={{ scale: 0.95 }}
             className="p-2 hover:bg-sidebar-accent rounded-lg transition-colors cursor-pointer"
           >
-            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {sidebarOpen ? <Dismiss24Regular className="w-6 h-6" /> : <Navigation24Regular className="w-6 h-6" />}
           </motion.button>
         </div>
         {renderPage()}

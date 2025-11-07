@@ -5,7 +5,7 @@ import { motion } from "framer-motion"
 import type { Order } from "@/types"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { CheckCircle, XCircle, Search } from "lucide-react"
+import { CheckmarkCircle24Regular, DismissCircle24Regular, Search24Regular } from "@fluentui/react-icons"
 
 interface HistoryPageProps {
   orders: Order[]
@@ -50,7 +50,7 @@ export default function HistoryPage({ orders, onNavigateToDashboard }: HistoryPa
                   <p className="text-3xl font-bold mt-2">{stats.completed}</p>
                 </div>
                 <div className="bg-green-100 dark:bg-green-900 p-3 rounded-lg">
-                  <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-300" />
+                  <CheckmarkCircle24Regular className="w-6 h-6 text-green-600 dark:text-green-300" />
                 </div>
               </div>
             </CardContent>
@@ -67,7 +67,7 @@ export default function HistoryPage({ orders, onNavigateToDashboard }: HistoryPa
                   <p className="text-3xl font-bold mt-2">{stats.rejected}</p>
                 </div>
                 <div className="bg-red-100 dark:bg-red-900 p-3 rounded-lg">
-                  <XCircle className="w-6 h-6 text-red-600 dark:text-red-300" />
+                  <DismissCircle24Regular className="w-6 h-6 text-red-600 dark:text-red-300" />
                 </div>
               </div>
             </CardContent>
@@ -97,7 +97,7 @@ export default function HistoryPage({ orders, onNavigateToDashboard }: HistoryPa
           <CardContent>
             <div className="space-y-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search24Regular className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Search by customer name..."
                   value={searchQuery}

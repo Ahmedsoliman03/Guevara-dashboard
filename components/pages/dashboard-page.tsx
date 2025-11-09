@@ -3,9 +3,10 @@
 import { useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import type { Order, DashboardStats } from "@/types"
+import type { DashboardStats } from "@/types"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { useOrders } from "@/components/providers/orders-provider"
 import {
   CheckmarkCircle24Regular,
   DismissCircle24Regular,
@@ -15,22 +16,9 @@ import {
   Prohibited24Regular,
 } from "@fluentui/react-icons"
 
-interface DashboardPageProps {
-  orders: Order[]
-  onAccept: (orderId: string) => void
-  onComplete: (orderId: string) => void
-  onReject: (orderId: string) => void
-  onNavigateToHistory?: () => void
-}
-
-export default function DashboardPage({
-  orders,
-  onAccept,
-  onComplete,
-  onReject,
-  onNavigateToHistory,
-}: DashboardPageProps) {
+export default function DashboardPage() {
   const router = useRouter()
+  const { orders, handleAccept, handleComplete, handleReject } = useOrders()
   const stats = useMemo<DashboardStats>(
     () => ({
       pending: orders.filter((o) => o.status === "pending").length,
@@ -118,13 +106,7 @@ export default function DashboardPage({
                 <CardDescription>Manage your pending and in-progress orders</CardDescription>
               </div>
               <motion.button
-                onClick={() => {
-                  if (onNavigateToHistory) {
-                    onNavigateToHistory()
-                  } else {
-                    router.push("/history")
-                  }
-                }}
+                onClick={() => router.push("/history")}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-sm px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
@@ -200,7 +182,7 @@ export default function DashboardPage({
                       {order.status === "pending" && !order.rejected && (
                         <div className="flex gap-2 pt-4 justify-end">
                           <motion.div whileTap={{ scale: 0.95 }}>
-                            <Button size="sm" className="cursor-pointer" onClick={() => onAccept(order.id)}>
+                            <Button size="sm" className="cursor-pointer" onClick={() => handleAccept(order.id)}>
                               <CheckmarkCircle24Regular className="w-4 h-4 mr-2" />
                               Accept
                             </Button>
@@ -210,7 +192,7 @@ export default function DashboardPage({
                               size="sm"
                               variant="destructive"
                               className="cursor-pointer"
-                              onClick={() => onReject(order.id)}
+                              onClick={() => handleReject(order.id)}
                             >
                               <DismissCircle24Regular className="w-4 h-4 mr-2" />
                               Reject
@@ -225,7 +207,7 @@ export default function DashboardPage({
                             <Button
                               size="sm"
                               className="bg-green-600 hover:bg-green-700 cursor-pointer"
-                              onClick={() => onComplete(order.id)}
+                              onClick={() => handleComplete(order.id)}
                             >
                               <Checkmark24Regular className="w-4 h-4 mr-2" />
                               Mark Completed

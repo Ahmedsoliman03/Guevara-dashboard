@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { addProductSchema, type AddProductFormData } from "@/lib/validation"
+import * as yup from "yup"
 import { ProductCategorySelect } from "./product-category-select"
 import { ProductImageUpload } from "./product-image-upload"
 import { ProductSaleToggle } from "./product-sale-toggle"
@@ -12,38 +13,92 @@ import { ProductPricingFields } from "./product-pricing-fields"
 
 interface ProductFormProps {
   onSubmit: (data: AddProductFormData) => void
+  initialValues?: Partial<AddProductFormData>
+  submitButtonText?: string
+  initialImage?: string
+  showCard?: boolean
 }
 
-export function ProductForm({ onSubmit }: ProductFormProps) {
+export function ProductForm({
+  onSubmit,
+  initialValues: propInitialValues,
+  submitButtonText = "Add Product",
+  initialImage,
+  showCard = true,
+}: ProductFormProps) {
   const initialValues: AddProductFormData = {
-    name: "",
-    category: "Skincare",
-    description: "",
-    image: undefined as any,
-    isSale: false,
-    salePercentage: 0,
-    oldPrice: 0,
-    currentPrice: 0,
-    price: 0,
+    name: propInitialValues?.name || "",
+    category: (propInitialValues?.category as any) || "Skincare",
+    description: propInitialValues?.description || "",
+    image: propInitialValues?.image || (undefined as any),
+    isSale: propInitialValues?.isSale || false,
+    salePercentage: propInitialValues?.salePercentage || 0,
+    oldPrice: propInitialValues?.oldPrice || 0,
+    currentPrice: propInitialValues?.currentPrice || 0,
+    price: propInitialValues?.price || 0,
   }
+
+  // Make image optional when editing (if initialImage is provided)
+  const validationSchema = initialImage
+    ? yup.object({
+        name: yup.string().required("Product name is required"),
+        category: yup
+          .string()
+          .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
+          .required("Category is required"),
+        description: yup.string().required("Description is required"),
+        image: yup.mixed<File>().optional(),
+        isSale: yup.boolean().required(),
+        salePercentage: yup.number().when("isSale", {
+          is: true,
+          then: (schema) =>
+            schema
+              .required("Sale percentage is required when sale is enabled")
+              .min(1, "Sale percentage must be at least 1%")
+              .max(100, "Sale percentage cannot exceed 100%"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+        oldPrice: yup.number().when("isSale", {
+          is: true,
+          then: (schema) =>
+            schema
+              .required("Original price is required when sale is enabled")
+              .min(0.01, "Original price must be greater than 0"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+        currentPrice: yup.number().when("isSale", {
+          is: true,
+          then: (schema) =>
+            schema
+              .required("Sale price is required when sale is enabled")
+              .min(0.01, "Sale price must be greater than 0"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+        price: yup.number().when("isSale", {
+          is: false,
+          then: (schema) =>
+            schema
+              .required("Price is required")
+              .min(0.01, "Price must be greater than 0"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      })
+    : addProductSchema
 
   const handleSubmit = (values: AddProductFormData, { resetForm }: any) => {
     onSubmit(values)
-    resetForm()
+    if (!initialImage) {
+      resetForm()
+    }
   }
 
-  return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Product Information</CardTitle>
-        <CardDescription>Fill in the details for your new product</CardDescription>
-      </CardHeader>
-      <CardContent className="w-full">
-        <Formik
-          initialValues={initialValues}
-          validationSchema={addProductSchema}
-          onSubmit={handleSubmit}
-        >
+  const formContent = (
+    <Formik
+      initialValues={initialValues}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+      enableReinitialize
+    >
           <Form className="space-y-6 w-full">
             {/* Category & Name */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
@@ -73,7 +128,7 @@ export function ProductForm({ onSubmit }: ProductFormProps) {
             </div>
 
             {/* Image Upload */}
-            <ProductImageUpload />
+            <ProductImageUpload initialImage={initialImage} />
 
             {/* Sale Toggle */}
             <ProductSaleToggle />
@@ -84,12 +139,24 @@ export function ProductForm({ onSubmit }: ProductFormProps) {
             {/* Submit Button */}
             <motion.div whileTap={{ scale: 0.98 }}>
               <Button type="submit" size="lg" className="w-full">
-                Add Product
+                {submitButtonText}
               </Button>
             </motion.div>
           </Form>
         </Formik>
-      </CardContent>
+  )
+
+  if (!showCard) {
+    return <div className="w-full">{formContent}</div>
+  }
+
+  return (
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle>Product Information</CardTitle>
+        <CardDescription>Fill in the details for your product</CardDescription>
+      </CardHeader>
+      <CardContent className="w-full">{formContent}</CardContent>
     </Card>
   )
 }

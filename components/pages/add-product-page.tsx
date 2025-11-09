@@ -1,13 +1,18 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { ProductForm } from "./add-product/product-form"
+import { useProducts } from "@/components/providers/products-provider"
 import type { AddProductFormData } from "@/lib/validation"
 
 export default function AddProductPage() {
+  const router = useRouter()
+  const { addProduct } = useProducts()
+
   const handleSubmit = (data: AddProductFormData) => {
-    console.log("Product submitted:", data)
-    alert("Product added successfully!")
+    addProduct(data)
+    router.push("/products")
   }
 
   return (

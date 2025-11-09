@@ -1,22 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useFormikContext, ErrorMessage } from "formik"
 import type { AddCategoryFormData } from "@/lib/validation"
 
-export function CategoryPhotoUpload() {
-  const { setFieldValue } = useFormikContext<AddCategoryFormData>()
-  const [imagePreview, setImagePreview] = useState("")
+interface CategoryPhotoUploadProps {
+  initialImage?: string
+}
+
+export function CategoryPhotoUpload({ initialImage }: CategoryPhotoUploadProps) {
+  const { setFieldValue, values } = useFormikContext<AddCategoryFormData>()
+  const [imagePreview, setImagePreview] = useState(initialImage || "")
+
+  useEffect(() => {
+    if (initialImage && !imagePreview) {
+      setImagePreview(initialImage)
+    }
+  }, [initialImage])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setFieldValue("photo", file, true)
+      setFieldValue("photo", file, false)
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
       }
       reader.readAsDataURL(file)
+    } else if (initialImage) {
+      // If no file selected and we have an initial image, keep it
+      setFieldValue("photo", undefined, false)
+      setImagePreview(initialImage)
     }
   }
 

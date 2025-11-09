@@ -1,4 +1,4 @@
-import type { Order, Product } from "@/types"
+import type { Order, Product, Category } from "@/types"
 
 export const mockOrders: Order[] = [
   {
@@ -91,5 +91,36 @@ export const mockProducts: Product[] = [
     salePercentage: 30,
     isSale: true,
     createdAt: new Date("2024-10-15"),
+  },
+]
+
+export const mockCategories: Category[] = [
+  {
+    id: "1",
+    name: "Skincare",
+    numberOfProducts: 12,
+    photo: "/placeholder.jpg",
+    createdAt: new Date("2024-10-01"),
+  },
+  {
+    id: "2",
+    name: "Lips",
+    numberOfProducts: 8,
+    photo: "/placeholder.jpg",
+    createdAt: new Date("2024-10-02"),
+  },
+  {
+    id: "3",
+    name: "Makeup",
+    numberOfProducts: 15,
+    photo: "/placeholder.jpg",
+    createdAt: new Date("2024-10-03"),
+  },
+  {
+    id: "4",
+    name: "Eyes",
+    numberOfProducts: 10,
+    photo: "/placeholder.jpg",
+    createdAt: new Date("2024-10-04"),
   },
 ]

@@ -1,22 +1,36 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useFormikContext, ErrorMessage } from "formik"
 import type { AddProductFormData } from "@/lib/validation"
 
-export function ProductImageUpload() {
+interface ProductImageUploadProps {
+  initialImage?: string
+}
+
+export function ProductImageUpload({ initialImage }: ProductImageUploadProps) {
   const { setFieldValue } = useFormikContext<AddProductFormData>()
-  const [imagePreview, setImagePreview] = useState("")
+  const [imagePreview, setImagePreview] = useState(initialImage || "")
+
+  useEffect(() => {
+    if (initialImage) {
+      setImagePreview(initialImage)
+    }
+  }, [initialImage])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setFieldValue("image", file, true)
+      setFieldValue("image", file, false)
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
       }
       reader.readAsDataURL(file)
+    } else if (initialImage) {
+      // If no file selected and we have an initial image, keep it
+      setFieldValue("image", undefined, false)
+      setImagePreview(initialImage)
     }
   }
 

@@ -1,18 +1,16 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import type { Order } from "@/types"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { useOrders } from "@/components/providers/orders-provider"
 import { CheckmarkCircle24Regular, DismissCircle24Regular, Search24Regular } from "@fluentui/react-icons"
 
-interface HistoryPageProps {
-  orders: Order[]
-  onNavigateToDashboard?: () => void
-}
-
-export default function HistoryPage({ orders, onNavigateToDashboard }: HistoryPageProps) {
+export default function HistoryPage() {
+  const router = useRouter()
+  const { orders } = useOrders()
   const [searchQuery, setSearchQuery] = useState("")
 
   // Filter to show only completed and rejected orders
@@ -85,7 +83,7 @@ export default function HistoryPage({ orders, onNavigateToDashboard }: HistoryPa
                 <CardDescription>All completed and rejected orders</CardDescription>
               </div>
               <motion.button
-                onClick={onNavigateToDashboard}
+                onClick={() => router.push("/dashboard")}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="text-sm px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"

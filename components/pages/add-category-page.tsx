@@ -1,13 +1,18 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { CategoryForm } from "./add-category/category-form"
+import { useCategories } from "@/components/providers/categories-provider"
 import type { AddCategoryFormData } from "@/lib/validation"
 
 export default function AddCategoryPage() {
+  const router = useRouter()
+  const { addCategory } = useCategories()
+
   const handleSubmit = (data: AddCategoryFormData) => {
-    console.log("Category submitted:", data)
-    alert("Category added successfully!")
+    addCategory(data)
+    router.push("/categories")
   }
 
   return (

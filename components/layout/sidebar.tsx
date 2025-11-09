@@ -1,7 +1,8 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { useEffect, useState, memo, useMemo, useCallback } from "react"
+import { useEffect, useState, useMemo, useCallback } from "react"
+import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
 import {
   Board24Regular,
@@ -12,16 +13,21 @@ import {
   WeatherSunny24Regular,
   History24Regular,
   FolderAdd24Regular,
+  Folder24Regular,
 } from "@fluentui/react-icons"
 
-type PageType = "dashboard" | "add-product" | "add-category" | "products" | "history"
+type PageType = "dashboard" | "add-product" | "add-category" | "categories" | "products" | "history"
 
-interface SidebarProps {
-  currentPage: PageType
-  onPageChange: (page: PageType) => void
+interface MenuItem {
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  page: PageType
+  path: string
 }
 
-function Sidebar({ currentPage, onPageChange }: SidebarProps) {
+function Sidebar() {
+  const pathname = usePathname()
+  const router = useRouter()
   const [isDark, setIsDark] = useState(false)
   const [mounted, setMounted] = useState(false)
 
@@ -30,6 +36,17 @@ function Sidebar({ currentPage, onPageChange }: SidebarProps) {
     const prefersDark = document.documentElement.classList.contains("dark")
     setIsDark(prefersDark)
   }, [])
+
+  // Determine current page from pathname
+  const currentPage = useMemo<PageType>(() => {
+    if (pathname?.startsWith("/dashboard")) return "dashboard"
+    if (pathname?.startsWith("/add-product")) return "add-product"
+    if (pathname?.startsWith("/add-category")) return "add-category"
+    if (pathname?.startsWith("/categories")) return "categories"
+    if (pathname?.startsWith("/products")) return "products"
+    if (pathname?.startsWith("/history")) return "history"
+    return "dashboard"
+  }, [pathname])
 
   const toggleTheme = useCallback(() => {
     const html = document.documentElement
@@ -51,26 +68,38 @@ function Sidebar({ currentPage, onPageChange }: SidebarProps) {
     window.location.reload()
   }, [])
 
-  const menuItems = useMemo(
+  const handlePageChange = useCallback(
+    (path: string) => {
+      router.push(path)
+    },
+    [router],
+  )
+
+  const menuItems = useMemo<MenuItem[]>(
     () => [
-      { label: "Dashboard", icon: Board24Regular, page: "dashboard" as PageType },
-      { label: "Add Product", icon: Add24Regular, page: "add-product" as PageType },
-      { label: "Add Category", icon: FolderAdd24Regular, page: "add-category" as PageType },
-      { label: "Products", icon: Box24Regular, page: "products" as PageType },
-      { label: "History", icon: History24Regular, page: "history" as PageType },
+      { label: "Dashboard", icon: Board24Regular, page: "dashboard", path: "/dashboard" },
+      { label: "Add Product", icon: Add24Regular, page: "add-product", path: "/add-product" },
+      { label: "Add Category", icon: FolderAdd24Regular, page: "add-category", path: "/add-category" },
+      { label: "Categories", icon: Folder24Regular, page: "categories", path: "/categories" },
+      { label: "Products", icon: Box24Regular, page: "products", path: "/products" },
+      { label: "History", icon: History24Regular, page: "history", path: "/history" },
     ],
     [],
   )
 
-  if (!mounted) return null
+  if (!mounted) {
+    return (
+      <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-screen fixed left-0 top-0 z-30">
+        <div className="p-6 border-b border-sidebar-border">
+          <h1 className="text-2xl font-bold text-sidebar-primary">Guevara</h1>
+          <p className="text-xs text-sidebar-foreground/60">Admin Dashboard</p>
+        </div>
+      </aside>
+    )
+  }
 
   return (
-    <motion.aside
-      initial={{ x: -250 }}
-      animate={{ x: 0 }}
-      transition={{ duration: 0.3 }}
-      className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-screen"
-    >
+    <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-screen fixed left-0 top-0 z-30">
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
         <h1 className="text-2xl font-bold text-sidebar-primary">Guevara</h1>
@@ -82,7 +111,7 @@ function Sidebar({ currentPage, onPageChange }: SidebarProps) {
         {menuItems.map((item) => (
           <motion.button
             key={item.page}
-            onClick={() => onPageChange(item.page)}
+            onClick={() => handlePageChange(item.path)}
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
@@ -128,12 +157,8 @@ function Sidebar({ currentPage, onPageChange }: SidebarProps) {
           <span>Logout</span>
         </motion.button>
       </div>
-    </motion.aside>
+    </aside>
   )
 }
 
-// Memoize sidebar to prevent rebuilds on route changes - only re-renders when currentPage changes
-export default memo(Sidebar, (prevProps, nextProps) => {
-  // Only re-render if currentPage actually changed
-  return prevProps.currentPage === nextProps.currentPage && prevProps.onPageChange === nextProps.onPageChange
-})
+export default Sidebar

@@ -6,17 +6,16 @@ import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
 import {
   Board24Regular,
-  Add24Regular,
   Box24Regular,
   SignOut24Regular,
   WeatherMoon24Regular,
   WeatherSunny24Regular,
   History24Regular,
-  FolderAdd24Regular,
   Folder24Regular,
+  LockClosed24Regular,
 } from "@fluentui/react-icons"
 
-type PageType = "dashboard" | "add-product" | "add-category" | "categories" | "products" | "history"
+type PageType = "dashboard" | "categories" | "products" | "history" | "change-password"
 
 interface MenuItem {
   label: string
@@ -40,11 +39,10 @@ function Sidebar() {
   // Determine current page from pathname
   const currentPage = useMemo<PageType>(() => {
     if (pathname?.startsWith("/dashboard")) return "dashboard"
-    if (pathname?.startsWith("/add-product")) return "add-product"
-    if (pathname?.startsWith("/add-category")) return "add-category"
     if (pathname?.startsWith("/categories")) return "categories"
     if (pathname?.startsWith("/products")) return "products"
     if (pathname?.startsWith("/history")) return "history"
+    if (pathname?.startsWith("/change-password")) return "change-password"
     return "dashboard"
   }, [pathname])
 
@@ -78,11 +76,10 @@ function Sidebar() {
   const menuItems = useMemo<MenuItem[]>(
     () => [
       { label: "Dashboard", icon: Board24Regular, page: "dashboard", path: "/dashboard" },
-      { label: "Add Product", icon: Add24Regular, page: "add-product", path: "/add-product" },
-      { label: "Add Category", icon: FolderAdd24Regular, page: "add-category", path: "/add-category" },
       { label: "Categories", icon: Folder24Regular, page: "categories", path: "/categories" },
       { label: "Products", icon: Box24Regular, page: "products", path: "/products" },
       { label: "History", icon: History24Regular, page: "history", path: "/history" },
+      { label: "Change Password", icon: LockClosed24Regular, page: "change-password", path: "/change-password" },
     ],
     [],
   )

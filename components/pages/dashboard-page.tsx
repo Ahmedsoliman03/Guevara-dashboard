@@ -170,7 +170,7 @@ export default function DashboardPage() {
                         </div>
                         <div className="md:col-span-1">
                           <p className="text-muted-foreground">Total Price</p>
-                          <p className="font-bold text-primary">${order.totalPrice.toFixed(2)}</p>
+                          <p className="font-bold text-primary">{order.totalPrice.toFixed(2)} EGP</p>
                         </div>
                         <div className="md:col-span-2">
                           <p className="text-muted-foreground">Address</p>

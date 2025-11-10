@@ -17,12 +17,12 @@ export interface Product {
   id: string
   name: string
   category: "Skincare" | "Lips" | "Makeup" | "Eyes"
-  description: string
   image: string
   price: number
   oldPrice?: number
   salePercentage?: number
   isSale: boolean
+  count: number
   createdAt: Date
 }
 

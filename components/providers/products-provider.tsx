@@ -19,16 +19,22 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
   const [products, setProducts] = useState<Product[]>(mockProducts)
 
   const addProduct = (data: AddProductFormData) => {
+    // Auto-calculate sale percentage if sale is enabled
+    let salePercentage = data.salePercentage
+    if (data.isSale && data.oldPrice && data.currentPrice && data.oldPrice > data.currentPrice) {
+      salePercentage = Math.round(((data.oldPrice - data.currentPrice) / data.oldPrice) * 100)
+    }
+
     const newProduct: Product = {
       id: Date.now().toString(),
       name: data.name,
       category: data.category as Product["category"],
-      description: data.description,
       image: data.image instanceof File ? URL.createObjectURL(data.image) : "/placeholder.jpg",
       price: data.isSale ? data.currentPrice! : data.price!,
       oldPrice: data.isSale ? data.oldPrice : undefined,
-      salePercentage: data.isSale ? data.salePercentage : undefined,
+      salePercentage: data.isSale ? salePercentage : undefined,
       isSale: data.isSale,
+      count: data.count || 0,
       createdAt: new Date(),
     }
     setProducts((prev) => [...prev, newProduct])
@@ -40,18 +46,25 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
         if (product.id !== id) return product
 
         // Check if it's AddProductFormData (from form) or Partial<Product>
-        if ("name" in data && "description" in data && "category" in data) {
+        if ("name" in data && "category" in data && "isSale" in data) {
           // It's AddProductFormData
           const formData = data as AddProductFormData
+          
+          // Auto-calculate sale percentage if sale is enabled
+          let salePercentage = formData.salePercentage
+          if (formData.isSale && formData.oldPrice && formData.currentPrice && formData.oldPrice > formData.currentPrice) {
+            salePercentage = Math.round(((formData.oldPrice - formData.currentPrice) / formData.oldPrice) * 100)
+          }
+
           const updatedProduct = {
             ...product,
             name: formData.name,
             category: formData.category as Product["category"],
-            description: formData.description,
             price: formData.isSale ? formData.currentPrice! : formData.price!,
             oldPrice: formData.isSale ? formData.oldPrice : undefined,
-            salePercentage: formData.isSale ? formData.salePercentage : undefined,
+            salePercentage: formData.isSale ? salePercentage : undefined,
             isSale: formData.isSale,
+            count: formData.count || 0,
           }
 
           // Handle image update - only update if a new file was uploaded

@@ -195,7 +195,7 @@ export default function HistoryPage() {
                             <p
                               className={`font-bold ${order.status === "completed" ? "text-green-700 dark:text-green-200" : "text-primary"}`}
                             >
-                              ${order.totalPrice.toFixed(2)}
+                              {order.totalPrice.toFixed(2)} EGP
                             </p>
                           </div>
                           <div className="md:col-span-2">

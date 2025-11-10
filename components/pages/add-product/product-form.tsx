@@ -29,8 +29,8 @@ export function ProductForm({
   const initialValues: AddProductFormData = {
     name: propInitialValues?.name || "",
     category: (propInitialValues?.category as any) || "Skincare",
-    description: propInitialValues?.description || "",
     image: propInitialValues?.image || (undefined as any),
+    count: propInitialValues?.count || 0,
     isSale: propInitialValues?.isSale || false,
     salePercentage: propInitialValues?.salePercentage || 0,
     oldPrice: propInitialValues?.oldPrice || 0,
@@ -46,24 +46,27 @@ export function ProductForm({
           .string()
           .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
           .required("Category is required"),
-        description: yup.string().required("Description is required"),
         image: yup.mixed<File>().optional(),
+        count: yup
+          .number()
+          .required("Product count is required")
+          .min(0, "Product count cannot be negative")
+          .integer("Product count must be a whole number"),
         isSale: yup.boolean().required(),
-        salePercentage: yup.number().when("isSale", {
-          is: true,
-          then: (schema) =>
-            schema
-              .required("Sale percentage is required when sale is enabled")
-              .min(1, "Sale percentage must be at least 1%")
-              .max(100, "Sale percentage cannot exceed 100%"),
-          otherwise: (schema) => schema.notRequired(),
-        }),
+        salePercentage: yup.number().notRequired(),
         oldPrice: yup.number().when("isSale", {
           is: true,
           then: (schema) =>
             schema
               .required("Original price is required when sale is enabled")
-              .min(0.01, "Original price must be greater than 0"),
+              .min(0.01, "Original price must be greater than 0")
+              .test("greater-than-sale-price", "Original price must be greater than sale price", function (value) {
+                const { currentPrice } = this.parent
+                if (value && currentPrice && value <= currentPrice) {
+                  return this.createError({ message: "Original price must be greater than sale price" })
+                }
+                return true
+              }),
           otherwise: (schema) => schema.notRequired(),
         }),
         currentPrice: yup.number().when("isSale", {
@@ -86,6 +89,7 @@ export function ProductForm({
     : addProductSchema
 
   const handleSubmit = (values: AddProductFormData, { resetForm }: any) => {
+    // Sale percentage is automatically calculated in ProductPricingFields component
     onSubmit(values)
     if (!initialImage) {
       resetForm()
@@ -114,17 +118,18 @@ export function ProductForm({
               </div>
             </div>
 
-            {/* Description */}
+            {/* Count */}
             <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
+              <label className="text-sm font-medium">Product Count</label>
               <Field
-                as="textarea"
-                name="description"
-                placeholder="Enter product description"
-                rows={4}
+                type="number"
+                name="count"
+                min="0"
+                step="1"
+                placeholder="Enter product count"
                 className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <ErrorMessage name="description" component="div" className="text-sm text-destructive" />
+              <ErrorMessage name="count" component="div" className="text-sm text-destructive" />
             </div>
 
             {/* Image Upload */}

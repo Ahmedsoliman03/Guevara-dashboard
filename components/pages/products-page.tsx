@@ -12,13 +12,15 @@ import {
   Edit24Regular,
   Delete24Regular,
   Box24Regular,
+  Add24Regular,
 } from "@fluentui/react-icons"
 
 type CategoryType = "Skincare" | "Lips" | "Makeup" | "Eyes" | "All"
 
 export default function ProductsPage() {
-  const { products, updateProduct, deleteProduct } = useProducts()
+  const { products, addProduct, updateProduct, deleteProduct } = useProducts()
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>("All")
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
 
@@ -42,6 +44,11 @@ export default function ProductsPage() {
     return stats
   }, [products])
 
+  const handleAddSubmit = (data: AddProductFormData) => {
+    addProduct(data)
+    setIsAddModalOpen(false)
+  }
+
   const handleEditSubmit = (data: AddProductFormData) => {
     if (editingProduct) {
       updateProduct(editingProduct.id, data)
@@ -58,7 +65,7 @@ export default function ProductsPage() {
     return {
       name: product.name,
       category: product.category,
-      description: product.description,
+      count: product.count,
       isSale: product.isSale,
       price: product.isSale ? 0 : product.price,
       oldPrice: product.isSale ? product.oldPrice : 0,
@@ -71,9 +78,17 @@ export default function ProductsPage() {
     <div className="p-8 space-y-8 w-full">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <div>
-          <h1 className="text-4xl font-bold text-foreground">Products</h1>
-          <p className="text-muted-foreground mt-2">Manage your product catalog</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold text-foreground">Products</h1>
+            <p className="text-muted-foreground mt-2">Manage your product catalog</p>
+          </div>
+          <motion.div whileTap={{ scale: 0.95 }}>
+            <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
+              <Add24Regular className="w-5 h-5" />
+              Add Product
+            </Button>
+          </motion.div>
         </div>
       </motion.div>
 
@@ -134,7 +149,6 @@ export default function ProductsPage() {
                       <div className="flex-1">
                         <p className="text-xs text-muted-foreground font-medium">{product.category}</p>
                         <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.name}</h3>
-                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{product.description}</p>
                       </div>
                       <Box24Regular className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
                     </div>
@@ -143,13 +157,13 @@ export default function ProductsPage() {
                     <div className="flex items-baseline gap-2">
                       {product.isSale ? (
                         <>
-                          <span className="text-lg font-bold text-primary">${product.price.toFixed(2)}</span>
+                          <span className="text-lg font-bold text-primary">{product.price.toFixed(2)} EGP</span>
                           <span className="text-sm text-muted-foreground line-through">
-                            ${product.oldPrice?.toFixed(2)}
+                            {product.oldPrice?.toFixed(2)} EGP
                           </span>
                         </>
                       ) : (
-                        <span className="text-lg font-bold text-primary">${product.price.toFixed(2)}</span>
+                        <span className="text-lg font-bold text-primary">{product.price.toFixed(2)} EGP</span>
                       )}
                     </div>
 
@@ -199,13 +213,31 @@ export default function ProductsPage() {
         >
           <Box24Regular className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-foreground mb-2">No products found</h3>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             {selectedCategory === "All"
               ? "No products available"
               : `No products found in ${selectedCategory} category`}
           </p>
+          {selectedCategory === "All" && (
+            <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
+              <Add24Regular className="w-5 h-5" />
+              Add Product
+            </Button>
+          )}
         </motion.div>
       )}
+
+      {/* Add Product Modal */}
+      <AnimatePresence>
+        {isAddModalOpen && (
+          <Modal
+            title="Add Product"
+            onClose={() => setIsAddModalOpen(false)}
+          >
+            <ProductForm onSubmit={handleAddSubmit} showCard={false} />
+          </Modal>
+        )}
+      </AnimatePresence>
 
       {/* Edit Product Modal */}
       <AnimatePresence>

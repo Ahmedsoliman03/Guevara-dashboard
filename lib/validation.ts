@@ -61,12 +61,8 @@ export type AddProductFormData = yup.InferType<typeof addProductSchema>
 
 export const addCategorySchema = yup.object({
   name: yup.string().required("Category name is required"),
-  numberOfProducts: yup
-    .number()
-    .required("Number of products is required")
-    .min(0, "Number of products cannot be negative")
-    .integer("Number of products must be a whole number"),
-  photo: yup
+ 
+  file: yup
     .mixed<File>()
     .required("Category photo is required")
     .test("fileSize", "Image size must be less than 5MB", (value) => {

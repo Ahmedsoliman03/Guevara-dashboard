@@ -15,26 +15,35 @@ import {
   Add24Regular,
   Folder24Regular,
 } from "@fluentui/react-icons"
+import useCategory from "@/hooks/use-category"
+import toast from "react-hot-toast"
 
 export default function CategoriesPage() {
-  const router = useRouter()
-  const { categories, addCategory, updateCategory, deleteCategory } = useCategories()
+  const { categories, updateCategory, deleteCategory } = useCategories()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
+const {addToCategory} = useCategory()
+ const handleAddSubmit = (data: AddCategoryFormData) => {
+  addToCategory.mutate(data, {
+    onSuccess: (res: any) => {   
+      toast.success(res.message); 
+      setIsAddModalOpen(false);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+};
 
-  const handleAddSubmit = (data: AddCategoryFormData) => {
-    addCategory(data)
-    setIsAddModalOpen(false)
-  }
 
   const handleEditSubmit = (data: AddCategoryFormData) => {
     if (editingCategory) {
       updateCategory(editingCategory.id, {
         name: data.name,
-        numberOfProducts: data.numberOfProducts,
         // If a new file was uploaded, use it; otherwise keep the existing photo
-        photo: data.photo instanceof File ? data.photo : editingCategory.photo,
+               file : data.file instanceof File ? data.file : editingCategory.photo,
+
       })
       setEditingCategory(null)
     }
@@ -159,7 +168,7 @@ export default function CategoriesPage() {
             title="Add Category"
             onClose={() => setIsAddModalOpen(false)}
           >
-            <CategoryForm onSubmit={handleAddSubmit} showCard={false} />
+            <CategoryForm onSubmit={handleAddSubmit} showCard={false} isLoading={addToCategory.isPending}/>
           </Modal>
         )}
       </AnimatePresence>

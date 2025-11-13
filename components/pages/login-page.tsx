@@ -96,11 +96,7 @@ try {
               )}
             </Formik>
 
-            <div className="text-xs text-muted-foreground text-center pt-4">
-              <p>Demo credentials:</p>
-              <p>Email: admin@guevara.com</p>
-              <p>Password: admin123</p>
-            </div>
+         
           </CardContent>
         </Card>
       </motion.div>

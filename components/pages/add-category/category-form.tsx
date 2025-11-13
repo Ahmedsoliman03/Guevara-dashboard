@@ -8,7 +8,6 @@ import { addCategorySchema, type AddCategoryFormData } from "@/lib/validation"
 import * as yup from "yup"
 import { CategoryNameField } from "./category-name-field"
 import { CategoryPhotoUpload } from "./category-photo-upload"
-import { CategoryNumberOfProductsField } from "./category-number-of-products-field"
 
 
 interface CategoryFormProps {
@@ -17,30 +16,27 @@ interface CategoryFormProps {
   submitButtonText?: string
   initialImage?: string
   showCard?: boolean
+  isLoading?: boolean
 }
 
 export function CategoryForm({
   onSubmit,
   initialValues: propInitialValues,
-  submitButtonText = "Add Category",
+    isLoading,
+  submitButtonText = isLoading ? "Loading..." : "Add Category",
   initialImage,
   showCard = true,
 }: CategoryFormProps) {
   const initialValues: AddCategoryFormData = {
     name: propInitialValues?.name || "",
-    numberOfProducts: propInitialValues?.numberOfProducts || 0,
-    photo: propInitialValues?.photo || (undefined as any),
+    file: propInitialValues?.file || (undefined as any),
   }
 
   // Make photo optional when editing (if initialImage is provided)
   const validationSchema = initialImage
     ? yup.object({
         name: yup.string().required("Category name is required"),
-        numberOfProducts: yup
-          .number()
-          .required("Number of products is required")
-          .min(0, "Number of products cannot be negative")
-          .integer("Number of products must be a whole number"),
+      
         photo: yup.mixed<File>().optional(),
       })
     : addCategorySchema
@@ -63,15 +59,14 @@ export function CategoryForm({
         {/* Category Name */}
         <CategoryNameField />
 
-        {/* Number of Products */}
-        <CategoryNumberOfProductsField />
+  
 
         {/* Photo Upload */}
         <CategoryPhotoUpload initialImage={initialImage} />
 
         {/* Submit Button */}
         <motion.div whileTap={{ scale: 0.98 }}>
-          <Button type="submit" size="lg" className="w-full">
+          <Button disabled={isLoading} type="submit" size="lg" className="w-full">
             {submitButtonText}
           </Button>
         </motion.div>

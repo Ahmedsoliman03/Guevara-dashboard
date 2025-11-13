@@ -21,7 +21,7 @@ export function CategoryPhotoUpload({ initialImage }: CategoryPhotoUploadProps) 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      setFieldValue("photo", file, false)
+      setFieldValue("file", file, false)
       const reader = new FileReader()
       reader.onloadend = () => {
         setImagePreview(reader.result as string)
@@ -29,7 +29,7 @@ export function CategoryPhotoUpload({ initialImage }: CategoryPhotoUploadProps) 
       reader.readAsDataURL(file)
     } else if (initialImage) {
       // If no file selected and we have an initial image, keep it
-      setFieldValue("photo", undefined, false)
+      setFieldValue("file", undefined, false)
       setImagePreview(initialImage)
     }
   }
@@ -63,7 +63,7 @@ export function CategoryPhotoUpload({ initialImage }: CategoryPhotoUploadProps) 
           )}
         </label>
       </div>
-      <ErrorMessage name="photo" component="div" className="text-sm text-destructive" />
+      <ErrorMessage name="file" component="div" className="text-sm text-destructive" />
     </div>
   )
 }

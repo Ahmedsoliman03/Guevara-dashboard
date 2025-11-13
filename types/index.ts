@@ -46,3 +46,10 @@ export interface Category {
   photo: string
   createdAt: Date
 }
+
+export interface AuthCredentials {
+
+  email: string
+  password: string
+ 
+}

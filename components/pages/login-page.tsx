@@ -10,6 +10,8 @@ import { validateCredentials, setAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { AuthCredentials } from "@/types"
+import UseAuth from "@/hooks/useAuth"
 
 const loginSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -18,17 +20,20 @@ const loginSchema = yup.object({
 
 export default function LoginPage() {
   const router = useRouter()
+const {Login} = UseAuth();
+  const handleSubmit = async (values: AuthCredentials, { setSubmitting, setFieldError }: any) => {
+try {
+    const {data} = await Login(values);
+    
+    if (data) {
+      setAuthToken(data?.token?.accessToken);
+          console.log(data.token.accessToken);
 
-  const handleSubmit = async (values: { email: string; password: string }, { setSubmitting, setFieldError }: any) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    if (validateCredentials(values.email, values.password)) {
-      setAuthToken("mock-token")
-      router.push("/dashboard")
-    } else {
-      setFieldError("password", "Invalid email or password")
     }
+    router.push("/dashboard")
+} catch (error) {
+    setFieldError("general", "Invalid email or password")
+}
 
     setSubmitting(false)
   }

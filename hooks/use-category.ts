@@ -1,5 +1,7 @@
+import { formatDate } from '@/utils/format';
 import api from "@/lib/api"
 import { AddCategoryFormData } from "@/lib/validation";
+import { Category } from "@/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
 
@@ -11,7 +13,7 @@ const useCategory = () => {
     queryKey: ["category"],
     queryFn: async () => {
       const res = await api.get("/category"); // replace with real endpoint
-      return res.data;
+      return res.data.data.categories  as Category[];
     },
     staleTime: 1000 * 10,
   });
@@ -35,8 +37,12 @@ const useCategory = () => {
 
   // Update Category item
   const updateCategory = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: unknown }) => {
-      const res = await api.put(`/category/${id}`, data);
+    mutationFn: async ({ id, data }: { id: string; data: AddCategoryFormData }) => {
+        const formData = new FormData();
+      for (const key in data) {
+        formData.append(key, (data as any)[key]);
+      }
+      const res = await api.patch(`/category/${id}`, formData);
       return res.data;
     },
     onSuccess: () => {

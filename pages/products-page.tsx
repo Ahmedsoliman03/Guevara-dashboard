@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useProducts } from "@/components/providers/products-provider"
-import { ProductForm } from "./add-product/product-form"
+import { ProductForm } from "../components/products/product-form"
 import type { AddProductFormData } from "@/lib/validation"
 import type { Product } from "@/types"
 import {
@@ -47,6 +47,8 @@ export default function ProductsPage() {
   const handleAddSubmit = (data: AddProductFormData) => {
     addProduct(data)
     setIsAddModalOpen(false)
+    console.log(data);
+    
   }
 
   const handleEditSubmit = (data: AddProductFormData) => {

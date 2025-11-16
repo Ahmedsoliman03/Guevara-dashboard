@@ -40,10 +40,14 @@ export interface DashboardStats {
 }
 
 export interface Category {
-  id: string
-  name: string
-  file: string
-  createdAt: Date
+  _id: string,
+  createdAt: string , 
+  name: string,
+  logo: {
+    secure_url: string
+  },
+  productNum?: Number
+  updatedAt: string
 }
 
 export interface AuthCredentials {

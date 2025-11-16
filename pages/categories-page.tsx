@@ -1,11 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useCategories } from "@/components/providers/categories-provider"
-import { CategoryForm } from "./add-category/category-form"
+import { CategoryForm } from "../components/categorys/category-form"
 import type { AddCategoryFormData } from "@/lib/validation"
 import type { Category } from "@/types"
 import {
@@ -16,18 +16,28 @@ import {
 } from "@fluentui/react-icons"
 import useCategory from "@/hooks/use-category"
 import toast from "react-hot-toast"
+import useOrders from "@/hooks/use-orders"
+import { formatDate } from "@/utils/format"
+import EmptyCategory from "@/components/categorys/emptyCategory"
+import Modal from "@/components/categorys/Modal"
+import ConfirmationDelete from "@/components/categorys/confirmationDelete"
 
 export default function CategoriesPage() {
-  const { categories, updateCategory, deleteCategory } = useCategories()
+  const {  deleteCategory } = useCategories()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
-const {addToCategory} = useCategory()
- const handleAddSubmit = (data: AddCategoryFormData) => {
+  const [singleId , setSingleId] = useState<string>("")
+const {addToCategory , getAllCategory , updateCategory} = useCategory()
+const {data: CategoryData , isPending , error} = getAllCategory
+
+const {sendMessage} = useOrders()
+ const handleAddSubmit = (data: AddCategoryFormData ) => {
   addToCategory.mutate(data, {
     onSuccess: (res: any) => {   
       toast.success(res.message); 
       setIsAddModalOpen(false);
+      sendMessage("كسمك" , "201557588855" , "123456")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Something went wrong");
@@ -35,21 +45,30 @@ const {addToCategory} = useCategory()
   });
 };
 
+const onEdit = (id:string , category:Category)=>{
+  setSingleId(id)
+  setEditingCategory(category)
+}
 
-  const handleEditSubmit = (data: AddCategoryFormData) => {
-    if (editingCategory) {
-      // updateCategory(editingCategory.id, {
-      //   name: data.name,
-      //   // If a new file was uploaded, use it; otherwise keep the existing photo
-      //          file : data.file instanceof File ? data.file : editingCategory.file,
 
-      // })
-      setEditingCategory(null)
-    }
+const handleEditSubmit = (data: AddCategoryFormData, id?: string) => {
+  if (!id) {
+    toast.error("ID is required to update category");
+    return;
   }
 
-  const handleDelete = (category: Category) => {
-    deleteCategory(category.id)
+  updateCategory.mutate({ data, id }, {
+    onSuccess: (res: any) => {   
+      setEditingCategory(null)
+      toast.success(res.message); 
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+};
+  const handleDelete = (category: Category , id:string) => {
+    deleteCategory(category._id)
     setDeletingCategory(null)
   }
 
@@ -57,38 +76,42 @@ const {addToCategory} = useCategory()
     <div className="p-8 space-y-8 w-full">
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="flex items-center justify-between">
+        <div className="flex items-start gap-2 justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">Categories</h1>
-            <p className="text-muted-foreground mt-2">Manage your product categories</p>
+            <h1 className=" text-2xl md:text-4xl font-bold text-foreground">Categories</h1>
           </div>
           <motion.div whileTap={{ scale: 0.95 }}>
+            {CategoryData?.length !== 0 &&
             <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
               <Add24Regular className="w-5 h-5" />
               Add Category
             </Button>
+}
           </motion.div>
         </div>
+                    <p className="text-muted-foreground mt-2 w-full">Manage your product categories</p>
+
       </motion.div>
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <AnimatePresence>
-          {categories.map((category, idx) => (
+          {isPending ? <p>loading</p> : 
+[...(CategoryData || [])].reverse().map((category, idx) => (
             <motion.div
-              key={category.id}
+              key={category._id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ delay: idx * 0.05 }}
             >
-              <Card className="hover:shadow-lg transition-shadow h-full">
+              <Card className="hover:shadow-lg transition-shadow h-full py-0">
                 <CardContent className="p-0">
                   {/* Category Image */}
                   <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={category.file || "/placeholder.jpg"}
+                      src={category.logo.secure_url || "/placeholder.jpg"}
                       alt={category.name}
                       className="w-full h-full object-cover"
                     />
@@ -103,11 +126,11 @@ const {addToCategory} = useCategory()
                           {category.numberOfProducts} product{category.numberOfProducts !== 1 ? "s" : ""}
                         </p> */}
                       </div>
-                      <Folder24Regular className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                      <p className="text-md text-muted-foreground">{category?.productNum ? `${category?.productNum}` :""} product</p>
                     </div>
 
                     <p className="text-xs text-muted-foreground">
-                      Created: {category.createdAt.toLocaleDateString()}
+                      Created: {formatDate(category.createdAt)}
                     </p>
 
                     {/* Action Buttons */}
@@ -117,7 +140,7 @@ const {addToCategory} = useCategory()
                           variant="outline"
                           size="sm"
                           className="w-full gap-2"
-                          onClick={() => setEditingCategory(category)}
+                          onClick={() => onEdit( category._id , category )}
                         >
                           <Edit24Regular className="w-4 h-4" />
                           Edit
@@ -144,20 +167,8 @@ const {addToCategory} = useCategory()
       </div>
 
       {/* Empty State */}
-      {categories.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-12"
-        >
-          <Folder24Regular className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-foreground mb-2">No categories yet</h3>
-          <p className="text-muted-foreground mb-4">Get started by adding your first category</p>
-          <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
-            <Add24Regular className="w-5 h-5" />
-            Add Category
-          </Button>
-        </motion.div>
+      {CategoryData?.length === 0 && (
+      <EmptyCategory setIsAddModalOpen={setIsAddModalOpen}/>
       )}
 
       {/* Add Category Modal */}
@@ -185,9 +196,11 @@ const {addToCategory} = useCategory()
                 name: editingCategory.name,
                 file: undefined as any,
               }}
-              initialImage={editingCategory.file}
+              initialImage={editingCategory.logo.secure_url}
               submitButtonText="Update Category"
               showCard={false}
+              id= {singleId}
+              isLoading={updateCategory.isPending}
             />
           </Modal>
         )}
@@ -196,71 +209,13 @@ const {addToCategory} = useCategory()
       {/* Delete Confirmation Modal */}
       <AnimatePresence>
         {deletingCategory && (
-          <Modal
-            title="Delete Category"
-            onClose={() => setDeletingCategory(null)}
-          >
-            <div className="space-y-4">
-              <p className="text-foreground">
-                Are you sure you want to delete the category <strong>{deletingCategory.name}</strong>?
-                This action cannot be undone.
-              </p>
-              <div className="flex gap-2 justify-end">
-                <Button variant="outline" onClick={() => setDeletingCategory(null)}>
-                  Cancel
-                </Button>
-                <Button
-                  variant="destructive"
-                  onClick={() => handleDelete(deletingCategory)}
-                >
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </Modal>
+        <ConfirmationDelete 
+        deletingCategory={deletingCategory}
+        handleDelete={handleDelete}
+        setDeletingCategory={setDeletingCategory}
+        />
         )}
       </AnimatePresence>
     </div>
   )
 }
-
-// Modal Component
-function Modal({
-  title,
-  children,
-  onClose,
-}: {
-  title: string
-  children: React.ReactNode
-  onClose: () => void
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        onClick={(e) => e.stopPropagation()}
-        className="bg-background rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto"
-      >
-        <div className="p-6 border-b border-border">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-foreground">{title}</h2>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              ✕
-            </Button>
-          </div>
-        </div>
-            <div className="p-6 w-full">{children}</div>
-      </motion.div>
-    </motion.div>
-  )
-}
-
-

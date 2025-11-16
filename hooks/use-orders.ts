@@ -33,16 +33,16 @@ const useOrders = () => {
   }, [])
 // send message after order accepted or rejected
 const sendMessage = (userName: string , phone:string , orderId:string , reason?:string) => {
-  const message = reason ?`مرحبًا ${userName} 👋
-نأسف لإبلاغك أن طلبك لدى Guevara (رقم ${orderId}) تم رفضه ❌
+  const message = reason ?`مرحبًا ${userName} 
+نأسف لإبلاغك أن طلبك لدى Guevara (رقم ${orderId}) تم رفضه 
 السبب: ${reason}
 إذا رغبت في مزيد من المعلومات أو إعادة المحاولة، تواصل معنا وسنكون سعداء بالمساعدة.
-شكرًا لتفهمك ❤️`
+شكرًا لتفهمك `
 :
-`مرحبًا ${userName} 👋
-تم استلام طلبك في Guevara بنجاح وجارٍ الآن تجهيز الطلب 🚚💨
-🔢 رقم الطلب: ${orderId}
-شكرًا لثقتك في Guevara ❤️`;
+`مرحبًا ${userName} 
+تم استلام طلبك في Guevara بنجاح وجارٍ الآن تجهيز الطلب 
+ رقم الطلب: ${orderId}
+شكرًا لثقتك في Guevara `;
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
 };

@@ -11,12 +11,13 @@ import { CategoryPhotoUpload } from "./category-photo-upload"
 
 
 interface CategoryFormProps {
-  onSubmit: (data: AddCategoryFormData) => void
+  onSubmit: (data: AddCategoryFormData , id?:string ) => void
   initialValues?: Partial<AddCategoryFormData>
   submitButtonText?: string
   initialImage?: string
   showCard?: boolean
   isLoading?: boolean
+  id?: string
 }
 
 export function CategoryForm({
@@ -26,6 +27,7 @@ export function CategoryForm({
   submitButtonText = isLoading ? "Loading..." : "Add Category",
   initialImage,
   showCard = true,
+  id
 }: CategoryFormProps) {
   const initialValues: AddCategoryFormData = {
     name: propInitialValues?.name || "",
@@ -42,7 +44,14 @@ export function CategoryForm({
     : addCategorySchema
 
   const handleSubmit = (values: AddCategoryFormData, { resetForm }: any) => {
+    if(id){
+      onSubmit(values , id)
+      
+      
+    }
+    else{
     onSubmit(values)
+    }
     if (!initialImage) {
       resetForm()
     }

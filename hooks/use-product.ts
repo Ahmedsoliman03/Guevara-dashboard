@@ -18,19 +18,6 @@ const useProduct = () => {
     })
   }, [])
 
-  // Get single product by ID
-  const getProductById = useCallback((id: string) => {
-    return useQuery({
-      queryKey: ["products", "single", { id }],
-      queryFn: async () => {
-        // TODO: Replace with actual endpoint
-        const res = await axios.get(`/${id}`)
-        return res.data
-      },
-      staleTime: 1000 * 10,
-      enabled: !!id,
-    })
-  }, [])
 
   // Add product
   const addProduct = useCallback(() => {
@@ -76,7 +63,6 @@ const useProduct = () => {
 
   return {
     getAllProducts,
-    getProductById,
     addProduct,
     updateProduct,
     deleteProduct,

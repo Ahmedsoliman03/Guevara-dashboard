@@ -42,8 +42,7 @@ export interface DashboardStats {
 export interface Category {
   id: string
   name: string
-  numberOfProducts: number
-  photo: string
+  file: string
   createdAt: Date
 }
 

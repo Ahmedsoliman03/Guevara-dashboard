@@ -22,8 +22,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
     const newCategory: Category = {
       id: Date.now().toString(),
       name: data.name,
-      numberOfProducts: data.numberOfProducts,
-      photo: data.photo instanceof File ? URL.createObjectURL(data.photo) : "/placeholder.jpg",
+      photo: data.file instanceof File ? URL.createObjectURL(data.photo) : "/placeholder.jpg",
       createdAt: new Date(),
     }
     setCategories((prev) => [...prev, newCategory])
@@ -37,8 +36,7 @@ export function CategoriesProvider({ children }: { children: ReactNode }) {
         const updatedCategory = {
           ...category,
           name: data.name ?? category.name,
-          numberOfProducts: data.numberOfProducts ?? category.numberOfProducts,
-          photo: data.photo instanceof File 
+          file: data.photo instanceof File 
             ? URL.createObjectURL(data.photo) 
             : typeof data.photo === 'string' 
               ? data.photo 

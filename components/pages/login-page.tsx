@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AuthCredentials } from "@/types"
 import UseAuth from "@/hooks/useAuth"
+import toast from "react-hot-toast"
 
 const loginSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
@@ -27,12 +28,13 @@ try {
     
     if (data) {
       setAuthToken(data?.token?.accessToken);
-          console.log(data.token.accessToken);
+          toast.success("Login successful");
 
     }
     router.push("/dashboard")
 } catch (error) {
     setFieldError("general", "Invalid email or password")
+    toast.error("Login failed: Invalid email or password");
 }
 
     setSubmitting(false)

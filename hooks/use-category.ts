@@ -24,7 +24,7 @@ const useCategory = () => {
       for (const key in data) {
         formData.append(key, (data as any)[key]);
       }
-      const res = await api.post("/category", formData);
+      const res = await api.post("/category", formData );
       
       return res.data;
     },

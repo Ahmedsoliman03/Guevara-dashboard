@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -39,12 +38,12 @@ const {addToCategory} = useCategory()
 
   const handleEditSubmit = (data: AddCategoryFormData) => {
     if (editingCategory) {
-      updateCategory(editingCategory.id, {
-        name: data.name,
-        // If a new file was uploaded, use it; otherwise keep the existing photo
-               file : data.file instanceof File ? data.file : editingCategory.photo,
+      // updateCategory(editingCategory.id, {
+      //   name: data.name,
+      //   // If a new file was uploaded, use it; otherwise keep the existing photo
+      //          file : data.file instanceof File ? data.file : editingCategory.file,
 
-      })
+      // })
       setEditingCategory(null)
     }
   }
@@ -89,7 +88,7 @@ const {addToCategory} = useCategory()
                   <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={category.photo || "/placeholder.jpg"}
+                      src={category.file || "/placeholder.jpg"}
                       alt={category.name}
                       className="w-full h-full object-cover"
                     />
@@ -100,9 +99,9 @@ const {addToCategory} = useCategory()
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-foreground">{category.name}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">
+                        {/* <p className="text-sm text-muted-foreground mt-1">
                           {category.numberOfProducts} product{category.numberOfProducts !== 1 ? "s" : ""}
-                        </p>
+                        </p> */}
                       </div>
                       <Folder24Regular className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
                     </div>
@@ -184,10 +183,9 @@ const {addToCategory} = useCategory()
               onSubmit={handleEditSubmit}
               initialValues={{
                 name: editingCategory.name,
-                numberOfProducts: editingCategory.numberOfProducts,
-                photo: undefined as any,
+                file: undefined as any,
               }}
-              initialImage={editingCategory.photo}
+              initialImage={editingCategory.file}
               submitButtonText="Update Category"
               showCard={false}
             />

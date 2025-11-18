@@ -1,6 +1,5 @@
-import HistoryPage from "@/pages/history-page"
+import HistoryClient from "@/components/history/history-client"
 
-export default function Page() {
-  return <HistoryPage />
+export default function HistoryPage() {
+  return <HistoryClient />
 }
-

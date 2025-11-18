@@ -1,6 +1,5 @@
-import ProductsPage from "@/pages/products-page"
+import ProductsClient from "@/components/products/products-client"
 
-export default function Page() {
-  return <ProductsPage />
+export default function ProductsPage() {
+  return <ProductsClient />
 }
-

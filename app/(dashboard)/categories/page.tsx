@@ -1,6 +1,5 @@
-import CategoriesPage from "@/pages/categories-page"
+import CategoriesClient from "@/components/categorys/categories-client"
 
-export default function Page() {
-  return <CategoriesPage />
+export default function CategoriesPage() {
+  return <CategoriesClient />
 }
-

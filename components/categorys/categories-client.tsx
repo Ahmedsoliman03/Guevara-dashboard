@@ -19,6 +19,7 @@ import { formatDate } from "@/utils/format"
 import EmptyCategory from "@/components/categorys/emptyCategory"
 import Modal from "@/components/ui/Modal"
 import ConfirmationDelete from "@/components/categorys/confirmationDelete"
+import CategoryLoadingSkeleton from "@/components/categorys/category-loading-skeleton"
 
 export default function CategoriesClient() {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
@@ -104,7 +105,9 @@ export default function CategoriesClient() {
             {/* Categories Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <AnimatePresence>
-                    {isPending ? <p>loading</p> :
+                    {isPending ? (
+                        <CategoryLoadingSkeleton />
+                    ) :
                         [...(CategoryData || [])].reverse().map((category, idx) => (
                             <motion.div
                                 key={category._id}

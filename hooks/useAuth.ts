@@ -1,7 +1,8 @@
 "use client"
+import { ChangePasswordFormData } from "@/components/home/ChangPassModal";
 import api from "@/lib/api";
-import { ChangePasswordFormData } from "@/pages/change-password-page";
 import { AuthCredentials } from "@/types";
+import toast from "react-hot-toast";
 
 const UseAuth = () => {
     const Login= async(AuthCredentials:AuthCredentials) => {
@@ -16,8 +17,10 @@ const UseAuth = () => {
         try {
             const req = await api.patch(`/auth/change-password`, ChangePassData);
             return req.data; 
-        } catch (error) {
+        } catch (error:any) {
             console.error("Login error:", error);
+                // toast.error(error.response?.data?.message)
+                throw error;
         }
     }
 return {Login , ChangePassword}

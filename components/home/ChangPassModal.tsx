@@ -1,19 +1,22 @@
 "use client"
-
-import { Formik, Form, Field, ErrorMessage } from "formik"
-import { motion } from "framer-motion"
+import React, { useState } from 'react'
+import {AnimatePresence, motion} from "framer-motion"
+import { Button } from '../ui/button'
+import { LockClosed24Regular } from '@fluentui/react-icons'
+import Modal from '../ui/Modal'
+import UseAuth from '@/hooks/useAuth'
+import toast from 'react-hot-toast'
 import * as yup from "yup"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import UseAuth from "@/hooks/useAuth"
-import toast from "react-hot-toast"
+import { ErrorMessage, Field, Form, Formik } from 'formik'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import { Input } from '../ui/input'
 
 const changePasswordSchema = yup.object({
   currentPassword: yup.string().required("Current password is required"),
   newPassword: yup
     .string()
     .required("New password is required")
+    .matches( /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,  "Password must be at least 8 characters and contain: uppercase letter, lowercase letter, number, and special character (@$!%*?&)")
     .min(6, "Password must be at least 6 characters"),
   confirmNewPassword: yup
     .string()
@@ -23,8 +26,9 @@ const changePasswordSchema = yup.object({
 
 export type ChangePasswordFormData = yup.InferType<typeof changePasswordSchema>
 
-export default function ChangePasswordPage() {
-  const {ChangePassword} = UseAuth()
+export default function ChangPassModal() {
+    const [changePass , setChangePass] = useState(false)
+      const {ChangePassword} = UseAuth()
   const handleSubmit = async (values: ChangePasswordFormData, { setSubmitting, resetForm }: any) => {
 try{
       const res = await ChangePassword(values)
@@ -32,28 +36,30 @@ try{
       
 resetForm()
 }
-catch(err){
-  toast.error("Somthing went wrong please check your current password")
+catch(err:any){
+toast.error(err?.response.data.message)
 }
     setSubmitting(false)
   }
-
   return (
-    <div className="p-8 space-y-8 w-full">
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-4xl font-bold text-foreground">Change Password</h1>
-        <p className="text-muted-foreground mt-2">Update your account password</p>
-      </motion.div>
+    <div className='w-full md:w-auto'>
+       <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
+                        <Button
+                        className='w-full!'
+                          onClick={() => setChangePass(true)}
+                        >
+                            <LockClosed24Regular/>
+                          Change Password
+                        </Button>
+                      </motion.div>
+                      {changePass &&
+                        <AnimatePresence>
+                            <Modal
+                            title='Change Password'
+                            onClose={()=>setChangePass(false)}
+                            >
+                              <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-2xl">
 
-      {/* Form */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-2xl">
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle>Password Information</CardTitle>
-            <CardDescription>Enter your current password and choose a new one</CardDescription>
-          </CardHeader>
-          <CardContent className="w-full">
             <Formik
               initialValues={{
                 currentPassword: "",
@@ -113,10 +119,11 @@ catch(err){
                 </Form>
               )}
             </Formik>
-          </CardContent>
-        </Card>
+    
       </motion.div>
+                            </Modal>
+                        </AnimatePresence>
+}
     </div>
   )
 }
-

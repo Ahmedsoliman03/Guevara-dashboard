@@ -1,5 +1,5 @@
 import React from 'react'
-import Modal from './Modal'
+import Modal from '../ui/Modal'
 import { Category } from '@/types'
 import { Button } from '../ui/button'
 

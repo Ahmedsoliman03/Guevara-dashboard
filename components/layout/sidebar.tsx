@@ -79,7 +79,6 @@ function Sidebar() {
       { label: "Categories", icon: Folder24Regular, page: "categories", path: "/categories" },
       { label: "Products", icon: Box24Regular, page: "products", path: "/products" },
       { label: "History", icon: History24Regular, page: "history", path: "/history" },
-      { label: "Change Password", icon: LockClosed24Regular, page: "change-password", path: "/change-password" },
     ],
     [],
   )

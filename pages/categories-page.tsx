@@ -18,7 +18,7 @@ import toast from "react-hot-toast"
 import useOrders from "@/hooks/use-orders"
 import { formatDate } from "@/utils/format"
 import EmptyCategory from "@/components/categorys/emptyCategory"
-import Modal from "@/components/categorys/Modal"
+import Modal from "@/components/ui/Modal"
 import ConfirmationDelete from "@/components/categorys/confirmationDelete"
 
 export default function CategoriesPage() {

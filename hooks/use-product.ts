@@ -1,6 +1,9 @@
+"use client"
 import axios from "axios"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
+import { AddProductForApi } from "@/types"
+import api from "@/lib/api"
 
 const useProduct = () => {
   const queryClient = useQueryClient()
@@ -20,18 +23,21 @@ const useProduct = () => {
 
 
   // Add product
-  const addProduct = useCallback(() => {
-    return useMutation({
-      mutationFn: async (data: unknown) => {
-        // TODO: Replace with actual endpoint
-        const res = await axios.post("", data)
+  const addProduct = 
+     useMutation({
+      mutationFn: async (data: AddProductForApi) => {
+     const formData = new FormData();
+      for (const key in data) {
+        formData.append(key, (data as any)[key]);
+      }
+        const res = await api.post("/product", formData)
         return res.data
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["products"] })
       },
     })
-  }, [queryClient])
+  
 
   // Update product
   const updateProduct = useCallback(() => {

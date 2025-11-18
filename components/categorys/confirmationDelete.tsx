@@ -6,9 +6,10 @@ import { Button } from '../ui/button'
 interface DeleteProps {
     setDeletingCategory: (val:Category | null) => void
     deletingCategory: Category
-    handleDelete:(val: Category , id:string) => void
+    handleDelete:( id:string) => void
+    isLoading:boolean
 }
-export default function ConfirmationDelete({setDeletingCategory ,deletingCategory , handleDelete } : DeleteProps) {
+export default function ConfirmationDelete({setDeletingCategory ,deletingCategory , handleDelete , isLoading } : DeleteProps) {
   return (
     <Modal
             title="Delete Category"
@@ -17,7 +18,6 @@ export default function ConfirmationDelete({setDeletingCategory ,deletingCategor
             <div className="space-y-4">
               <p className="text-foreground">
                 Are you sure you want to delete the category <strong>{deletingCategory.name}</strong>?
-                This action cannot be undone.
               </p>
               <div className="flex gap-2 justify-end">
                 <Button variant="outline" onClick={() => setDeletingCategory(null)}>
@@ -25,9 +25,10 @@ export default function ConfirmationDelete({setDeletingCategory ,deletingCategor
                 </Button>
                 <Button
                   variant="destructive"
-                  onClick={() => handleDelete(deletingCategory , deletingCategory._id)}
+                  disabled={isLoading}
+                  onClick={() => handleDelete(deletingCategory._id)}
                 >
-                  Delete
+                  {isLoading? "loading...":"Delete"}
                 </Button>
               </div>
             </div>

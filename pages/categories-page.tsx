@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useCategories } from "@/components/providers/categories-provider"
 import { CategoryForm } from "../components/categorys/category-form"
 import type { AddCategoryFormData } from "@/lib/validation"
 import type { Category } from "@/types"
@@ -23,12 +22,11 @@ import Modal from "@/components/categorys/Modal"
 import ConfirmationDelete from "@/components/categorys/confirmationDelete"
 
 export default function CategoriesPage() {
-  const {  deleteCategory } = useCategories()
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingCategory, setEditingCategory] = useState<Category | null>(null)
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
   const [singleId , setSingleId] = useState<string>("")
-const {addToCategory , getAllCategory , updateCategory} = useCategory()
+const {addToCategory , getAllCategory , updateCategory , deleteCategory} = useCategory()
 const {data: CategoryData , isPending , error} = getAllCategory
 
 const {sendMessage} = useOrders()
@@ -37,7 +35,7 @@ const {sendMessage} = useOrders()
     onSuccess: (res: any) => {   
       toast.success(res.message); 
       setIsAddModalOpen(false);
-      sendMessage("كسمك" , "201557588855" , "123456")
+      // sendMessage("كسمك" , "201557588855" , "123456")
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Something went wrong");
@@ -67,9 +65,22 @@ const handleEditSubmit = (data: AddCategoryFormData, id?: string) => {
     },
   });
 };
-  const handleDelete = (category: Category , id:string) => {
-    deleteCategory(category._id)
-    setDeletingCategory(null)
+  const handleDelete = ( id:string) => {
+    if (!id) {
+    toast.error("ID is required to update category");
+    return;
+  }
+
+  deleteCategory.mutate( id, {
+    onSuccess: (res: any) => {   
+      toast.success(res.message); 
+      setDeletingCategory(null)
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    },
+  });
+    
   }
 
   return (
@@ -122,11 +133,9 @@ const handleEditSubmit = (data: AddCategoryFormData, id?: string) => {
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <h3 className="text-lg font-bold text-foreground">{category.name}</h3>
-                        {/* <p className="text-sm text-muted-foreground mt-1">
-                          {category.numberOfProducts} product{category.numberOfProducts !== 1 ? "s" : ""}
-                        </p> */}
+                     
                       </div>
-                      <p className="text-md text-muted-foreground">{category?.productNum ? `${category?.productNum}` :""} product</p>
+                      <p className="text-md text-muted-foreground">{category?.productNum} product</p>
                     </div>
 
                     <p className="text-xs text-muted-foreground">
@@ -213,6 +222,7 @@ const handleEditSubmit = (data: AddCategoryFormData, id?: string) => {
         deletingCategory={deletingCategory}
         handleDelete={handleDelete}
         setDeletingCategory={setDeletingCategory}
+        isLoading= {deleteCategory.isPending}
         />
         )}
       </AnimatePresence>

@@ -16,13 +16,14 @@ export interface Order {
 export interface Product {
   id: string
   name: string
-  category: "Skincare" | "Lips" | "Makeup" | "Eyes"
+  categoryId: "Skincare" | "Lips" | "Makeup" | "Eyes"
   image: string
-  price: number
-  oldPrice?: number
-  salePercentage?: number
+  price?: number
+  originalPrice?: number
+  finalPrice?: string ,
+  discountPercent?: number | null ,
   isSale: boolean
-  count: number
+  stock: number
   createdAt: Date
 }
 
@@ -46,7 +47,7 @@ export interface Category {
   logo: {
     secure_url: string
   },
-  productNum?: Number
+  productNum: number
   updatedAt: string
 }
 
@@ -55,4 +56,22 @@ export interface AuthCredentials {
   email: string
   password: string
  
+}
+
+
+export interface AddProductForApi {
+  name: string,
+    categoryId: string
+    image: File
+    stock: number
+    isSale?: boolean
+    discountPercent?: number | null
+    originalPrice?: number
+    finalPrice?: number,
+    price?: number,
+}
+
+export interface OrderStatus {
+  status: "pending" | "inprogress" | "delivered" | "canceled" | "rejected";
+  count: number;
 }

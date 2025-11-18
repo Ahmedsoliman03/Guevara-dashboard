@@ -15,52 +15,16 @@ import {
   Checkmark24Regular,
   Prohibited24Regular,
 } from "@fluentui/react-icons"
+import StatusCards from "@/components/home/statusCards"
 
 export default function DashboardPage() {
   const router = useRouter()
   const { orders, handleAccept, handleComplete, handleReject } = useOrders()
-  const stats = useMemo<DashboardStats>(
-    () => ({
-      pending: orders.filter((o) => o.status === "pending").length,
-      inProgress: orders.filter((o) => o.status === "in-progress").length,
-      completed: orders.filter((o) => o.status === "completed").length,
-      rejected: orders.filter((o) => o.status === "rejected").length,
-    }),
-    [orders],
-  )
+
 
   const activeOrders = orders.filter((o) => o.status === "pending" || o.status === "in-progress")
 
-  const statCards = [
-    {
-      title: "Pending",
-      value: stats.pending,
-      icon: Alert24Regular,
-      color: "bg-yellow-100 dark:bg-yellow-900",
-      textColor: "text-yellow-600 dark:text-yellow-300",
-    },
-    {
-      title: "In Progress",
-      value: stats.inProgress,
-      icon: Clock24Regular,
-      color: "bg-blue-100 dark:bg-blue-900",
-      textColor: "text-blue-600 dark:text-blue-300",
-    },
-    {
-      title: "Completed",
-      value: stats.completed,
-      icon: CheckmarkCircle24Regular,
-      color: "bg-green-100 dark:bg-green-900",
-      textColor: "text-green-600 dark:text-green-300",
-    },
-    {
-      title: "Rejected",
-      value: stats.rejected,
-      icon: Prohibited24Regular,
-      color: "bg-red-100 dark:bg-red-900",
-      textColor: "text-red-600 dark:text-red-300",
-    },
-  ]
+
 
   return (
     <div className="flex-1 p-8 space-y-8">
@@ -69,32 +33,8 @@ export default function DashboardPage() {
         <h1 className="text-4xl font-bold text-foreground">Dashboard</h1>
         <p className="text-muted-foreground mt-2">Welcome to Guevara Admin Dashboard</p>
       </motion.div>
-
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {statCards.map((stat, idx) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: idx * 0.1 }}
-          >
-            <Card className="hover:shadow-lg transition-shadow">
-              <CardContent className="pt-6">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground font-medium">{stat.title}</p>
-                    <p className="text-3xl font-bold mt-2">{stat.value}</p>
-                  </div>
-                  <div className={`${stat.color} p-3 rounded-lg`}>
-                    <stat.icon className={`w-6 h-6 ${stat.textColor}`} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+      <StatusCards type="dashboard"/>
 
       {/* Orders Section */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>

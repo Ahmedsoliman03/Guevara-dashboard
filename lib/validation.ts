@@ -2,7 +2,7 @@ import * as yup from "yup"
 
 export const addProductSchema = yup.object({
   name: yup.string().required("Product name is required"),
-  category: yup
+  categoryId: yup
     .string()
     .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
     .required("Category is required"),
@@ -17,29 +17,29 @@ export const addProductSchema = yup.object({
       if (!value || !(value instanceof File)) return false
       return value.type.startsWith("image/")
     }),
-  count: yup
+  stock: yup
     .number()
     .required("Product count is required")
     .min(0, "Product count cannot be negative")
     .integer("Product count must be a whole number"),
   isSale: yup.boolean().required(),
-  salePercentage: yup.number().notRequired(), // Auto-calculated, not user input
-  oldPrice: yup.number().when("isSale", {
+  discountPercent: yup.number().notRequired(), // Auto-calculated, not user input
+  originalPrice: yup.number().when("isSale", {
     is: true,
     then: (schema) =>
       schema
         .required("Original price is required when sale is enabled")
         .min(0.01, "Original price must be greater than 0")
         .test("greater-than-sale-price", "Original price must be greater than sale price", function (value) {
-          const { currentPrice } = this.parent
-          if (value && currentPrice && value <= currentPrice) {
+          const { finalPrice } = this.parent
+          if (value && finalPrice && value <= finalPrice) {
             return this.createError({ message: "Original price must be greater than sale price" })
           }
           return true
         }),
     otherwise: (schema) => schema.notRequired(),
   }),
-  currentPrice: yup.number().when("isSale", {
+  finalPrice: yup.number().when("isSale", {
     is: true,
     then: (schema) =>
       schema

@@ -6,6 +6,8 @@ import * as yup from "yup"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import UseAuth from "@/hooks/useAuth"
+import toast from "react-hot-toast"
 
 const changePasswordSchema = yup.object({
   currentPassword: yup.string().required("Current password is required"),
@@ -13,28 +15,26 @@ const changePasswordSchema = yup.object({
     .string()
     .required("New password is required")
     .min(6, "Password must be at least 6 characters"),
-  confirmPassword: yup
+  confirmNewPassword: yup
     .string()
     .required("Please confirm your password")
     .oneOf([yup.ref("newPassword")], "Passwords must match"),
 })
 
-type ChangePasswordFormData = yup.InferType<typeof changePasswordSchema>
+export type ChangePasswordFormData = yup.InferType<typeof changePasswordSchema>
 
 export default function ChangePasswordPage() {
-  const handleSubmit = async (values: ChangePasswordFormData, { setSubmitting, setFieldError, resetForm }: any) => {
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 500))
-
-    // Mock validation - in production, validate current password with backend
-    if (values.currentPassword === "admin123") {
-      // Success - password changed
-      alert("Password changed successfully!")
-      resetForm()
-    } else {
-      setFieldError("currentPassword", "Current password is incorrect")
-    }
-
+  const {ChangePassword} = UseAuth()
+  const handleSubmit = async (values: ChangePasswordFormData, { setSubmitting, resetForm }: any) => {
+try{
+      const res = await ChangePassword(values)
+      toast.success(res.message);
+      
+resetForm()
+}
+catch(err){
+  toast.error("Somthing went wrong please check your current password")
+}
     setSubmitting(false)
   }
 
@@ -58,7 +58,7 @@ export default function ChangePasswordPage() {
               initialValues={{
                 currentPassword: "",
                 newPassword: "",
-                confirmPassword: "",
+                confirmNewPassword: "",
               }}
               validationSchema={changePasswordSchema}
               onSubmit={handleSubmit}
@@ -97,11 +97,11 @@ export default function ChangePasswordPage() {
                     <Field
                       as={Input}
                       type="password"
-                      name="confirmPassword"
+                      name="confirmNewPassword"
                       placeholder="Confirm new password"
                       disabled={isSubmitting}
                     />
-                    <ErrorMessage name="confirmPassword" component="div" className="text-sm text-destructive" />
+                    <ErrorMessage name="confirmNewPassword" component="div" className="text-sm text-destructive" />
                   </div>
 
                   {/* Submit Button */}

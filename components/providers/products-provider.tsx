@@ -20,21 +20,21 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
   const addProduct = (data: AddProductFormData) => {
     // Auto-calculate sale percentage if sale is enabled
-    let salePercentage = data.salePercentage
-    if (data.isSale && data.oldPrice && data.currentPrice && data.oldPrice > data.currentPrice) {
-      salePercentage = Math.round(((data.oldPrice - data.currentPrice) / data.oldPrice) * 100)
+    let discountPercent = data.discountPercent
+    if (data.isSale && data.originalPrice && data.finalPrice && data.originalPrice > data.finalPrice) {
+      discountPercent = Math.round(((data.originalPrice - data.finalPrice) / data.originalPrice) * 100)
     }
 
     const newProduct: Product = {
       id: Date.now().toString(),
       name: data.name,
-      category: data.category as Product["category"],
+      categoryId: data.categoryId as Product["categoryId"],
       image: data.image instanceof File ? URL.createObjectURL(data.image) : "/placeholder.jpg",
-      price: data.isSale ? data.currentPrice! : data.price!,
-      oldPrice: data.isSale ? data.oldPrice : undefined,
-      salePercentage: data.isSale ? salePercentage : undefined,
+      price: data.isSale ? data.finalPrice! : data.price!,
+      originalPrice: data.isSale ? data.originalPrice : undefined,
+      discountPercent: data.isSale ? discountPercent : null,
       isSale: data.isSale,
-      count: data.count || 0,
+      stock: data.stock || 0,
       createdAt: new Date(),
     }
     setProducts((prev) => [...prev, newProduct])
@@ -51,20 +51,20 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           const formData = data as AddProductFormData
           
           // Auto-calculate sale percentage if sale is enabled
-          let salePercentage = formData.salePercentage
-          if (formData.isSale && formData.oldPrice && formData.currentPrice && formData.oldPrice > formData.currentPrice) {
-            salePercentage = Math.round(((formData.oldPrice - formData.currentPrice) / formData.oldPrice) * 100)
+          let salePercentage = formData.discountPercent
+          if (formData.isSale && formData.originalPrice && formData.finalPrice && formData.originalPrice > formData.finalPrice) {
+            salePercentage = Math.round(((formData.originalPrice - formData.finalPrice) / formData.originalPrice) * 100)
           }
 
           const updatedProduct = {
             ...product,
             name: formData.name,
-            category: formData.category as Product["category"],
-            price: formData.isSale ? formData.currentPrice! : formData.price!,
-            oldPrice: formData.isSale ? formData.oldPrice : undefined,
-            salePercentage: formData.isSale ? salePercentage : undefined,
+            category: formData.categoryId as Product["categoryId"],
+            price: formData.isSale ? formData.finalPrice! : formData.price!,
+            originalPrice: formData.isSale ? formData.originalPrice : undefined,
+            discountPercent: formData.isSale ? salePercentage : undefined,
             isSale: formData.isSale,
-            count: formData.count || 0,
+            stock: formData.stock || 0,
           }
 
           // Handle image update - only update if a new file was uploaded
@@ -78,7 +78,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
           return updatedProduct
         } else {
           // It's Partial<Product>
-          const partialData = data as Partial<Product>
+          const partialData = data as Partial<any>
           return {
             ...product,
             ...partialData,

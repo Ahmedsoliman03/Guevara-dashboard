@@ -28,13 +28,13 @@ export function ProductForm({
 }: ProductFormProps) {
   const initialValues: AddProductFormData = {
     name: propInitialValues?.name || "",
-    category: (propInitialValues?.category as any) || "Skincare",
+    categoryId: (propInitialValues?.categoryId as any) || "Skincare",
     image: propInitialValues?.image || (undefined as any),
-    count: propInitialValues?.count || 0,
+    stock: propInitialValues?.stock || 0,
     isSale: propInitialValues?.isSale || false,
-    salePercentage: propInitialValues?.salePercentage || 0,
-    oldPrice: propInitialValues?.oldPrice || 0,
-    currentPrice: propInitialValues?.currentPrice || 0,
+    discountPercent: propInitialValues?.discountPercent || 0,
+    originalPrice: propInitialValues?.originalPrice || 0,
+    finalPrice: propInitialValues?.finalPrice || 0,
     price: propInitialValues?.price || 0,
   }
 
@@ -42,19 +42,19 @@ export function ProductForm({
   const validationSchema = initialImage
     ? yup.object({
         name: yup.string().required("Product name is required"),
-        category: yup
+        categoryId: yup
           .string()
           .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
           .required("Category is required"),
         image: yup.mixed<File>().optional(),
-        count: yup
+        stock: yup
           .number()
           .required("Product count is required")
           .min(0, "Product count cannot be negative")
           .integer("Product count must be a whole number"),
         isSale: yup.boolean().required(),
-        salePercentage: yup.number().notRequired(),
-        oldPrice: yup.number().when("isSale", {
+        discountPercent: yup.number().notRequired(),
+        originalPrice: yup.number().when("isSale", {
           is: true,
           then: (schema) =>
             schema
@@ -69,7 +69,7 @@ export function ProductForm({
               }),
           otherwise: (schema) => schema.notRequired(),
         }),
-        currentPrice: yup.number().when("isSale", {
+        finalPrice: yup.number().when("isSale", {
           is: true,
           then: (schema) =>
             schema
@@ -123,13 +123,13 @@ export function ProductForm({
               <label className="text-sm font-medium">Product Count</label>
               <Field
                 type="number"
-                name="count"
+                name="stock"
                 min="0"
                 step="1"
                 placeholder="Enter product count"
                 className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <ErrorMessage name="count" component="div" className="text-sm text-destructive" />
+              <ErrorMessage name="stock" component="div" className="text-sm text-destructive" />
             </div>
 
             {/* Image Upload */}

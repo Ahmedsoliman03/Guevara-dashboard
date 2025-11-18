@@ -1,4 +1,4 @@
-import { formatDate } from '@/utils/format';
+"use client"
 import api from "@/lib/api"
 import { AddCategoryFormData } from "@/lib/validation";
 import { Category } from "@/types";
@@ -7,12 +7,12 @@ import { useCallback } from "react"
 
 const useCategory = () => {
   const queryClient = useQueryClient();
-
   // Get all Category items
   const getAllCategory = useQuery({
     queryKey: ["category"],
     queryFn: async () => {
       const res = await api.get("/category"); // replace with real endpoint
+
       return res.data.data.categories  as Category[];
     },
     staleTime: 1000 * 10,

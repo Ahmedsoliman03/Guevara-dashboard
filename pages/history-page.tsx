@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { useOrders } from "@/components/providers/orders-provider"
 import { CheckmarkCircle24Regular, DismissCircle24Regular, Search24Regular } from "@fluentui/react-icons"
+import StatusCards from "@/components/home/statusCards"
 
 export default function HistoryPage() {
   const router = useRouter()
@@ -37,41 +38,7 @@ export default function HistoryPage() {
       </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Completed Stats */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground font-medium">Completed Orders</p>
-                  <p className="text-3xl font-bold mt-2">{stats.completed}</p>
-                </div>
-                <div className="bg-green-100 dark:bg-green-900 p-3 rounded-lg">
-                  <CheckmarkCircle24Regular className="w-6 h-6 text-green-600 dark:text-green-300" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Rejected Stats */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="pt-6">
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground font-medium">Rejected Orders</p>
-                  <p className="text-3xl font-bold mt-2">{stats.rejected}</p>
-                </div>
-                <div className="bg-red-100 dark:bg-red-900 p-3 rounded-lg">
-                  <DismissCircle24Regular className="w-6 h-6 text-red-600 dark:text-red-300" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      </div>
+     <StatusCards type="history"/>
 
       {/* History Orders Section */}
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>

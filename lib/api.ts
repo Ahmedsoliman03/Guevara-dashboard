@@ -26,7 +26,7 @@ api.interceptors.response.use(
       // Token expired or unauthorized
       Cookies.remove("accessToken", { path: "/" });
       // Redirect to login page
-      window.location.href = "/login";
+      window.location.href = "/";
     }
     return Promise.reject(error);
   }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useFormikContext, ErrorMessage } from "formik"
 import type { AddProductFormData } from "@/lib/validation"
 
@@ -9,14 +9,25 @@ interface ProductImageUploadProps {
 }
 
 export function ProductImageUpload({ initialImage }: ProductImageUploadProps) {
-  const { setFieldValue } = useFormikContext<AddProductFormData>()
+  const { setFieldValue, values } = useFormikContext<AddProductFormData>()
   const [imagePreview, setImagePreview] = useState(initialImage || "")
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (initialImage) {
       setImagePreview(initialImage)
     }
   }, [initialImage])
+
+  // Reset image preview when form is reset (detected by checking if image field is cleared)
+  useEffect(() => {
+    if (!values.image && !initialImage) {
+      setImagePreview("")
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
+    }
+  }, [values.image, initialImage])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -39,6 +50,7 @@ export function ProductImageUpload({ initialImage }: ProductImageUploadProps) {
       <label className="text-sm font-medium">Product Image</label>
       <div className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary transition-colors cursor-pointer w-full">
         <input
+          ref={fileInputRef}
           type="file"
           accept="image/*"
           onChange={handleImageChange}

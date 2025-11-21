@@ -4,7 +4,6 @@ export const addProductSchema = yup.object({
   name: yup.string().required("Product name is required"),
   categoryId: yup
     .string()
-    .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
     .required("Category is required"),
   image: yup
     .mixed<File>()
@@ -61,7 +60,7 @@ export type AddProductFormData = yup.InferType<typeof addProductSchema>
 
 export const addCategorySchema = yup.object({
   name: yup.string().required("Category name is required"),
- 
+
   file: yup
     .mixed<File>()
     .required("Category photo is required")

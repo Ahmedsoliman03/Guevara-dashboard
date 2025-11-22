@@ -19,17 +19,17 @@ export function OrdersProvider({ children }: { children: ReactNode }) {
 
   const handleAccept = (orderId: string) => {
     setOrders((prevOrders) =>
-      prevOrders.map((order) => (order.id === orderId ? { ...order, status: "in-progress", accepted: true } : order)),
+      prevOrders.map((order) => (order.id === orderId ? { ...order, status: "In-Progress", accepted: true } : order)),
     )
   }
 
   const handleComplete = (orderId: string) => {
-    setOrders((prevOrders) => prevOrders.map((order) => (order.id === orderId ? { ...order, status: "completed" } : order)))
+    setOrders((prevOrders) => prevOrders.map((order) => (order.id === orderId ? { ...order, status: "Delivered" } : order)))
   }
 
   const handleReject = (orderId: string) => {
     setOrders((prevOrders) =>
-      prevOrders.map((order) => (order.id === orderId ? { ...order, status: "rejected", rejected: true } : order)),
+      prevOrders.map((order) => (order.id === orderId ? { ...order, status: "Rejected", rejected: true } : order)),
     )
   }
 

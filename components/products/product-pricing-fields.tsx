@@ -13,7 +13,7 @@ export function ProductPricingFields() {
     if (isSale && values.originalPrice && values.finalPrice && values.originalPrice > 0 && values.finalPrice > 0) {
       if (values.originalPrice
         > values.finalPrice) {
-        const calculatedPercentage = Math.round(((values.originalPrice
+        const calculatedPercentage = (((values.originalPrice
           - values.finalPrice) / values.originalPrice
         ) * 100)
         setFieldValue("discountPercent", calculatedPercentage, false)

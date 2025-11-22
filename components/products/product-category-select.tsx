@@ -4,15 +4,19 @@ import { useEffect } from "react"
 import { useFormikContext, Field, ErrorMessage } from "formik"
 import type { AddProductFormData } from "@/lib/validation"
 import useCategory from "@/hooks/use-category"
+import { categoriesContext } from "../providers/categories-provider"
 
 export function ProductCategorySelect() {
   const { getAllCategory } = useCategory()
   const { data } = getAllCategory
   const { setFieldValue, values } = useFormikContext<AddProductFormData>()
-
+  const { setCategoryId } = categoriesContext()
   useEffect(() => {
     if (!values.categoryId && data && data.length > 0) {
       setFieldValue("categoryId", data[0]._id)
+    }
+    else {
+      setCategoryId(values.categoryId)
     }
   }, [data, values.categoryId, setFieldValue])
 

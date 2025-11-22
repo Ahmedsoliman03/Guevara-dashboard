@@ -31,16 +31,33 @@ export function ProductForm({
   isLoading = false,
   productId,
 }: ProductFormProps) {
-  const initialValues: AddProductFormData = {
+  // Define form values type to allow empty strings for numeric fields
+  type ProductFormValues = {
+    name: string
+    categoryId: string
+    image: File | undefined
+    stock: number | ""
+    isSale: boolean
+    discountPercent: number | ""
+    originalPrice: number | ""
+    finalPrice: number | ""
+    price: number | ""
+  }
+
+  const initialValues: ProductFormValues = {
     name: propInitialValues?.name || "",
-    categoryId: (propInitialValues?.categoryId as any) || "",
-    image: propInitialValues?.image || (undefined as any),
-    stock: propInitialValues?.stock || 0,
+    // Handle categoryId which might be an object if passed from Product
+    categoryId: typeof propInitialValues?.categoryId === 'object'
+      ? (propInitialValues.categoryId as any)._id
+      : propInitialValues?.categoryId || "",
+    // Handle image which might be an object if passed from Product
+    image: propInitialValues?.image || undefined,
+    stock: propInitialValues?.stock ?? "",
     isSale: propInitialValues?.isSale || false,
-    discountPercent: propInitialValues?.discountPercent || 0,
-    originalPrice: propInitialValues?.originalPrice || 0,
-    finalPrice: propInitialValues?.finalPrice || 0,
-    price: propInitialValues?.price || 0,
+    discountPercent: propInitialValues?.discountPercent ?? "",
+    originalPrice: propInitialValues?.originalPrice ?? "",
+    finalPrice: propInitialValues?.finalPrice ?? "",
+    price: propInitialValues?.price ?? "",
   }
 
   // Make image optional when editing (if initialImage is provided)
@@ -63,10 +80,10 @@ export function ProductForm({
         then: (schema) =>
           schema
             .required("Original price is required when sale is enabled")
-            .min(0.01, "Original price must be greater than 0")
+            .min(1, "Original price must be greater than 0")
             .test("greater-than-sale-price", "Original price must be greater than sale price", function (value) {
-              const { currentPrice } = this.parent
-              if (value && currentPrice && value <= currentPrice) {
+              const { finalPrice } = this.parent
+              if (value && finalPrice && value <= finalPrice) {
                 return this.createError({ message: "Original price must be greater than sale price" })
               }
               return true
@@ -78,7 +95,7 @@ export function ProductForm({
         then: (schema) =>
           schema
             .required("Sale price is required when sale is enabled")
-            .min(0.01, "Sale price must be greater than 0"),
+            .min(1, "Sale price must be greater than 0"),
         otherwise: (schema) => schema.notRequired(),
       }),
       price: yup.number().when("isSale", {
@@ -86,15 +103,16 @@ export function ProductForm({
         then: (schema) =>
           schema
             .required("Price is required")
-            .min(0.01, "Price must be greater than 0"),
+            .min(1, "Price must be greater than 0"),
         otherwise: (schema) => schema.notRequired(),
       }),
     })
     : addProductSchema
 
-  const handleSubmit = (values: AddProductFormData, { resetForm }: any) => {
+  const handleSubmit = (values: ProductFormValues, { resetForm }: any) => {
     // Sale percentage is automatically calculated in ProductPricingFields component
-    onSubmit(values, productId)
+    // Cast values to AddProductFormData since validation ensures they are numbers
+    onSubmit(values as unknown as AddProductFormData, productId)
     if (!initialImage) {
       resetForm()
     }
@@ -131,7 +149,7 @@ export function ProductForm({
               name="stock"
               min="0"
               step="1"
-              placeholder="Enter product count"
+              placeholder="Enter prod8uct count"
               className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <ErrorMessage name="stock" component="div" className="text-sm text-destructive" />

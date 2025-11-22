@@ -22,6 +22,8 @@ import useCategory from "@/hooks/use-category"
 import { formatDate } from "@/utils/format"
 import ProductLoadingSkeleton from "./product-loading-skeleton"
 
+import { Input } from "@/components/ui/input"
+
 export default function ProductsClient() {
 
     // state
@@ -30,6 +32,7 @@ export default function ProductsClient() {
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
     const { categoryId } = categoriesContext()
+    const [searchTerm, setSearchTerm] = useState("")
 
     // Data
     const { addProduct } = useProduct()
@@ -38,13 +41,25 @@ export default function ProductsClient() {
     const { getAllProducts, updateProduct, deleteProduct } = useProduct()
     const { data: products, isPending, error } = getAllProducts({ key: selectedCategory })
 
-    //  filteration of product 
+    // Filter products by category and search term
     const filteredProducts = useMemo(() => {
-        if (selectedCategory === "All") {
-            return products
+        let result = products
+
+        // Category filter
+        if (selectedCategory !== "All") {
+            result = result?.filter((p: Product) => p.categoryId.name === selectedCategory)
         }
-        return products?.filter((p: Product) => p.categoryId.name === selectedCategory)
-    }, [products, selectedCategory])
+
+        // Search filter - simple case-insensitive search by product name
+        if (searchTerm && result) {
+            const searchLower = searchTerm.toLowerCase()
+            result = result.filter((p: Product) =>
+                p.name.toLowerCase().includes(searchLower)
+            )
+        }
+
+        return result
+    }, [products, selectedCategory, searchTerm])
 
     // Number of products
     const numberofProducts = useMemo(() => {
@@ -177,42 +192,53 @@ export default function ProductsClient() {
                 </div>
             </motion.div>
 
-            {/* Category Filter */}
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-2">
-                <motion.button
-                    onClick={() => setSelectedCategory("All")}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 1 * 0.05 }}
-                    className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === "All"
-                        ? "bg-primary text-primary-foreground shadow-lg"
-                        : "bg-card border border-border text-foreground hover:border-primary"
-                        }`}
-                >
-                    All
-                    <span className="ml-2 text-xs">({numberofProducts})</span>
-                </motion.button>
-                {categoryData?.map((category, idx) => (
+            {/* Search and Filter */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-2">
                     <motion.button
-                        key={category._id}
-                        onClick={() => setSelectedCategory(category.name)}
+                        onClick={() => setSelectedCategory("All")}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === category.name
+                        transition={{ delay: 1 * 0.05 }}
+                        className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === "All"
                             ? "bg-primary text-primary-foreground shadow-lg"
                             : "bg-card border border-border text-foreground hover:border-primary"
                             }`}
                     >
-                        {category.name}
-                        <span className="ml-2 text-xs">({category.productNum})</span>
+                        All
+                        <span className="ml-2 text-xs">({numberofProducts})</span>
                     </motion.button>
-                ))}
-            </motion.div>
+                    {categoryData?.map((category, idx) => (
+                        <motion.button
+                            key={category._id}
+                            onClick={() => setSelectedCategory(category.name)}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.05 }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === category.name
+                                ? "bg-primary text-primary-foreground shadow-lg"
+                                : "bg-card border border-border text-foreground hover:border-primary"
+                                }`}
+                        >
+                            {category.name}
+                            <span className="ml-2 text-xs">({category.productNum})</span>
+                        </motion.button>
+                    ))}
+                </motion.div>
+
+                <div className="w-full md:w-72">
+                    <Input
+                        placeholder="Search products..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full"
+                    />
+                </div>
+            </div>
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -319,9 +345,11 @@ export default function ProductsClient() {
                     <Box24Regular className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-2">No products found</h3>
                     <p className="text-muted-foreground mb-4">
-                        {selectedCategory === "All"
-                            ? "No products available"
-                            : `No products found in ${selectedCategory} category`}
+                        {searchTerm
+                            ? `No products found matching "${searchTerm}"`
+                            : selectedCategory === "All"
+                                ? "No products available"
+                                : `No products found in ${selectedCategory} category`}
                     </p>
                     {selectedCategory === "All" && (
                         <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">

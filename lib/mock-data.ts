@@ -4,7 +4,7 @@ export const mockOrders: Order[] = [
   {
     id: "1",
     code: "ORD-2024-001",
-    status: "pending",
+    status: "Pending",
     userName: "Sarah Johnson",
     productName: "Hydrating Face Serum",
     quantity: 2,
@@ -15,7 +15,7 @@ export const mockOrders: Order[] = [
   {
     id: "2",
     code: "ORD-2024-002",
-    status: "pending",
+    status: "Pending",
     userName: "Emma Wilson",
     productName: "Lipstick Red Velvet",
     quantity: 1,
@@ -26,7 +26,7 @@ export const mockOrders: Order[] = [
   {
     id: "3",
     code: "ORD-2024-003",
-    status: "completed",
+    status: "Delivered",
     userName: "Jessica Brown",
     productName: "Eye Shadow Palette",
     quantity: 3,
@@ -37,7 +37,7 @@ export const mockOrders: Order[] = [
   {
     id: "4",
     code: "ORD-2024-004",
-    status: "pending",
+    status: "Pending",
     userName: "Michael Chen",
     productName: "Moisturizing Cream",
     quantity: 1,
@@ -47,80 +47,4 @@ export const mockOrders: Order[] = [
   },
 ]
 
-export const mockProducts: Product[] = [
-  {
-    id: "1",
-    name: "Hydrating Face Serum",
-    category: "Skincare",
-    image: "/hydrating-face-serum.jpg",
-    price: 44.99,
-    oldPrice: 59.99,
-    salePercentage: 25,
-    isSale: true,
-    count: 50,
-    createdAt: new Date("2024-11-01"),
-  },
-  {
-    id: "2",
-    name: "Lipstick Red Velvet",
-    category: "Lips",
-    image: "/lipstick-red-velvet.jpg",
-    price: 24.99,
-    isSale: false,
-    count: 30,
-    createdAt: new Date("2024-10-25"),
-  },
-  {
-    id: "3",
-    name: "Eye Shadow Palette",
-    category: "Eyes",
-    image: "/eye-shadow-palette.jpg",
-    price: 39.99,
-    isSale: false,
-    count: 25,
-    createdAt: new Date("2024-10-20"),
-  },
-  {
-    id: "4",
-    name: "Foundation Pro",
-    category: "Makeup",
-    image: "/foundation-makeup.png",
-    price: 34.99,
-    oldPrice: 49.99,
-    salePercentage: 30,
-    isSale: true,
-    count: 40,
-    createdAt: new Date("2024-10-15"),
-  },
-]
 
-export const mockCategories: Category[] = [
-  {
-    id: "1",
-    name: "Skincare",
-    numberOfProducts: 12,
-    photo: "/placeholder.jpg",
-    createdAt: new Date("2024-10-01"),
-  },
-  {
-    id: "2",
-    name: "Lips",
-    numberOfProducts: 8,
-    photo: "/placeholder.jpg",
-    createdAt: new Date("2024-10-02"),
-  },
-  {
-    id: "3",
-    name: "Makeup",
-    numberOfProducts: 15,
-    photo: "/placeholder.jpg",
-    createdAt: new Date("2024-10-03"),
-  },
-  {
-    id: "4",
-    name: "Eyes",
-    numberOfProducts: 10,
-    photo: "/placeholder.jpg",
-    createdAt: new Date("2024-10-04"),
-  },
-]

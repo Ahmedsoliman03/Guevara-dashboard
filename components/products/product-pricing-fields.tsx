@@ -12,10 +12,10 @@ export function ProductPricingFields() {
   useEffect(() => {
     if (isSale && values.originalPrice && values.finalPrice && values.originalPrice > 0 && values.finalPrice > 0) {
       if (values.originalPrice
-         > values.finalPrice) {
+        > values.finalPrice) {
         const calculatedPercentage = Math.round(((values.originalPrice
-           - values.finalPrice) / values.originalPrice
-      ) * 100)
+          - values.finalPrice) / values.originalPrice
+        ) * 100)
         setFieldValue("discountPercent", calculatedPercentage, false)
       } else {
         setFieldValue("discountPercent", 0, false)
@@ -34,9 +34,8 @@ export function ProductPricingFields() {
             <Field
               type="number"
               name="originalPrice"
-              min="0.01"
-              step="0.01"
-              placeholder="e.g., 99.99"
+
+              placeholder="e.g., 20"
               className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <ErrorMessage name="originalPrice" component="div" className="text-sm text-destructive" />
@@ -46,9 +45,8 @@ export function ProductPricingFields() {
             <Field
               type="number"
               name="finalPrice"
-              min="0.01"
-              step="0.01"
-              placeholder="e.g., 74.99"
+
+              placeholder="e.g., 20"
               className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <ErrorMessage name="finalPrice" component="div" className="text-sm text-destructive" />
@@ -77,9 +75,8 @@ export function ProductPricingFields() {
       <Field
         type="number"
         name="price"
-        min="0.01"
-        step="0.01"
-        placeholder="e.g., 49.99"
+
+        placeholder="e.g., 20"
         className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
       />
       <ErrorMessage name="price" component="div" className="text-sm text-destructive" />

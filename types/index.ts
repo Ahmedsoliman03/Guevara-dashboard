@@ -1,7 +1,7 @@
 export interface Order {
   id: string
   code: string
-  status: "pending" | "in-progress" | "completed" | "rejected"
+  status: "Pending" | "In-Progress" | "Delivered" | "Rejected"
   userName: string
   productName: string
   quantity: number
@@ -13,19 +13,6 @@ export interface Order {
 
 }
 
-// export interface Product {
-//   id: string
-//   name: string
-//   categoryId: "Skincare" | "Lips" | "Makeup" | "Eyes"
-//   image: string
-//   price?: number
-//   originalPrice?: number
-//   finalPrice?: string ,
-//   discountPercent?: number | null ,
-//   isSale: boolean
-//   stock: number
-//   createdAt: Date
-// }
 export interface Product {
   _id: string,
   image: {
@@ -48,11 +35,6 @@ export interface Product {
 }
 
 
-export interface AdminUser {
-  id: string
-  email: string
-  password: string
-}
 
 export interface DashboardStats {
   pending: number
@@ -72,14 +54,6 @@ export interface Category {
   updatedAt: string
 }
 
-export interface AuthCredentials {
-
-  email: string
-  password: string
-
-}
-
-
 export interface AddProductForApi {
   name: string,
   categoryId: string
@@ -93,6 +67,19 @@ export interface AddProductForApi {
 }
 
 export interface OrderStatus {
-  status: "pending" | "inprogress" | "delivered" | "canceled" | "rejected";
+  status: "Pending" | "In-Progress" | "Delivered" | "Rejected" | "Canceled"
   count: number;
+}
+
+// Auth
+export interface AuthCredentials {
+
+  email: string
+  password: string
+}
+
+export interface ResetPasswordData {
+  email: string
+  otp: string
+  newPassword: string
 }

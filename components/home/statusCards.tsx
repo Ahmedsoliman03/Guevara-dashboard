@@ -10,8 +10,9 @@ interface statusProp {
 export default function StatusCards({ type }: statusProp) {
   const { getStatus } = useStatus()
   const { data: statusOfCards, isLoading, error } = getStatus
-  const statusArr = type == "dashboard" ? statusOfCards?.filter((st) => st.status !== "canceled") :
-    statusOfCards?.filter(st => st.status === "rejected" || st.status === "delivered")
+  console.log(statusOfCards);
+  const statusArr = type == "dashboard" ? statusOfCards?.filter((st) => st.status !== "Canceled") :
+    statusOfCards?.filter(st => st.status === "Rejected" || st.status === "Delivered")
 
   const statCards = statusArr ? type == "dashboard" ? [
     {

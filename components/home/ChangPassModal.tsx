@@ -17,8 +17,7 @@ const changePasswordSchema = yup.object({
   newPassword: yup
     .string()
     .required("New password is required")
-    .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must be at least 8 characters and contain: uppercase letter, lowercase letter, number, and special character (@$!%*?&)")
-    .min(6, "Password must be at least 6 characters"),
+    .matches(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, "Password must be at least 8 characters and contain: uppercase letter, lowercase letter, number, and special character (@$!%*?&)"),
   confirmNewPassword: yup
     .string()
     .required("Please confirm your password")

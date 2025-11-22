@@ -16,16 +16,20 @@ import { AuthCredentials } from "@/types"
 import UseAuth from "@/hooks/useAuth"
 import toast from "react-hot-toast"
 import { useEffect, useState } from "react"
+import ForgotPasswordModal from "@/components/auth/ForgotPasswordModal"
 
 const loginSchema = yup.object({
   email: yup.string().email("Invalid email").required("Email is required"),
   password: yup.string().required("Password is required"),
 })
 
+
+
 export default function LoginPage() {
   const router = useRouter()
   const { Login } = UseAuth();
   const [mounted, setMounted] = useState(false)
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -79,7 +83,7 @@ export default function LoginPage() {
               validationSchema={loginSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting, errors, touched }) => (
+              {({ isSubmitting }) => (
                 <Form className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Email</label>
@@ -104,6 +108,17 @@ export default function LoginPage() {
                     <ErrorMessage name="password" component="div" className="text-sm text-destructive" />
                   </div>
 
+                  <div className="flex justify-center">
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="px-0 font-normal"
+                      onClick={() => setIsForgotPasswordOpen(true)}
+                    >
+                      Forgot password?
+                    </Button>
+                  </div>
+
                   <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Button type="submit" className="w-full" disabled={isSubmitting}>
                       {isSubmitting ? "Signing in..." : "Sign In"}
@@ -117,6 +132,7 @@ export default function LoginPage() {
           </CardContent>
         </Card>
       </motion.div>
+      <ForgotPasswordModal isOpen={isForgotPasswordOpen} onClose={() => setIsForgotPasswordOpen(false)} />
     </div>
   )
 }

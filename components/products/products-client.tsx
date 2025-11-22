@@ -87,15 +87,16 @@ export default function ProductsClient() {
 
     // Update
     const handleEditSubmit = (data: AddProductFormData, id?: string) => {
+        console.log(data);
         if (editingProduct && id) {
             const mainData = {
                 name: data.name,
                 image: data.image,
                 categoryId: data.categoryId,
                 stock: data.stock,
-                isSale: data.isSale,
+                onSale: data.isSale,
             }
-            const dataForApi: Partial<AddProductForApi> = data.price && data.price > 0 ? {
+            const dataForApi: Partial<AddProductForApi> = !data.isSale ? {
                 ...mainData,
                 originalPrice: data.price
             } : {
@@ -118,10 +119,18 @@ export default function ProductsClient() {
     }
 
     // Delete
-    // const handleDelete = (product: Product) => {
-    //     deleteProduct(product.id)
-    //     setDeletingProduct(null)
-    // }
+    const handleDelete = (product: Product) => {
+        deleteProduct.mutate(product._id, {
+            onSuccess: () => {
+                toast.success("Product deleted successfully");
+                setDeletingProduct(null)
+
+            },
+            onError: (error: any) => {
+                toast.error(error.response?.data?.message || "Something went wrong");
+            },
+        })
+    }
 
     const convertProductToFormData = (product: Product): Partial<AddProductFormData> => {
         return {
@@ -231,7 +240,7 @@ export default function ProductsClient() {
                                             />
                                             {product.onSale && (
                                                 <div className="absolute top-2 right-2 bg-destructive text-white px-3 py-1 rounded-full text-sm font-bold">
-                                                    -{product.discountPercent}%
+                                                    {product.discountPercent}%
                                                 </div>
                                             )}
                                         </div>
@@ -349,6 +358,7 @@ export default function ProductsClient() {
                             submitButtonText="Update Product"
                             showCard={false}
                             productId={editingProduct._id}
+                            isLoading={updateProduct.isPending}
                         />
                     </Modal>
                 )}
@@ -364,18 +374,18 @@ export default function ProductsClient() {
                         <div className="space-y-4">
                             <p className="text-foreground">
                                 Are you sure you want to delete the product <strong>{deletingProduct.name}</strong>?
-                                This action cannot be undone.
                             </p>
                             <div className="flex gap-2 justify-end">
                                 <Button variant="outline" onClick={() => setDeletingProduct(null)}>
                                     Cancel
                                 </Button>
-                                {/* <Button
+                                <Button
                                     variant="destructive"
                                     onClick={() => handleDelete(deletingProduct)}
+                                    disabled={deleteProduct.isPending}
                                 >
-                                    Delete
-                                </Button> */}
+                                    {deleteProduct.isPending ? "Deleting..." : "Delete"}
+                                </Button>
                             </div>
                         </div>
                     </Modal>

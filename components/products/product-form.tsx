@@ -33,7 +33,7 @@ export function ProductForm({
 }: ProductFormProps) {
   const initialValues: AddProductFormData = {
     name: propInitialValues?.name || "",
-    categoryId: (propInitialValues?.categoryId as any) || "Skincare",
+    categoryId: (propInitialValues?.categoryId as any) || "",
     image: propInitialValues?.image || (undefined as any),
     stock: propInitialValues?.stock || 0,
     isSale: propInitialValues?.isSale || false,
@@ -49,7 +49,6 @@ export function ProductForm({
       name: yup.string().required("Product name is required"),
       categoryId: yup
         .string()
-        .oneOf(["Skincare", "Lips", "Makeup", "Eyes"], "Invalid category")
         .required("Category is required"),
       image: yup.mixed<File>().optional(),
       stock: yup
@@ -149,7 +148,10 @@ export function ProductForm({
 
           {/* Submit Button */}
           <motion.div whileTap={{ scale: 0.98 }}>
-            <Button disabled={isLoading || isSubmitting} type="submit" size="lg" className="w-full">
+            <Button
+              disabled={isLoading || isSubmitting}
+
+              type="submit" size="lg" className="w-full">
               {isLoading || isSubmitting ? "Loading..." : submitButtonText}
             </Button>
           </motion.div>

@@ -62,18 +62,15 @@ const useProduct = () => {
 
 
   // Delete product
-  const deleteProduct = useCallback(() => {
-    return useMutation({
-      mutationFn: async (id: string) => {
-        // TODO: Replace with actual endpoint
-        const res = await axios.delete(`/${id}`)
-        return res.data
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["products"] })
-      },
-    })
-  }, [queryClient])
+  const deleteProduct = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await api.delete(`/product/${id}`)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] })
+    },
+  })
 
   return {
     getAllProducts,

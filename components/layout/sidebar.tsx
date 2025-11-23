@@ -24,7 +24,11 @@ interface MenuItem {
   path: string
 }
 
-function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void
+}
+
+function Sidebar({ onNavigate }: SidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [isDark, setIsDark] = useState(false)
@@ -69,8 +73,10 @@ function Sidebar() {
   const handlePageChange = useCallback(
     (path: string) => {
       router.push(path)
+      // Call onNavigate callback to close mobile sidebar
+      onNavigate?.()
     },
-    [router],
+    [router, onNavigate],
   )
 
   const menuItems = useMemo<MenuItem[]>(
@@ -110,11 +116,10 @@ function Sidebar() {
             onClick={() => handlePageChange(item.path)}
             whileHover={{ x: 4 }}
             whileTap={{ scale: 0.98 }}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-              currentPage === item.page
-                ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
-                : "text-sidebar-foreground hover:bg-sidebar-accent"
-            }`}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${currentPage === item.page
+              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+              : "text-sidebar-foreground hover:bg-sidebar-accent"
+              }`}
           >
             <item.icon className="w-5 h-5" />
             <span className="font-medium">{item.label}</span>

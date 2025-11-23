@@ -71,6 +71,8 @@ const useProduct = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["category"] });
+
     },
   })
 

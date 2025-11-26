@@ -5,29 +5,40 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useOrders } from "@/components/providers/orders-provider"
 import { Search24Regular } from "@fluentui/react-icons"
 import StatusCards from "@/components/home/statusCards"
+import useOrders from "@/hooks/use-orders"
+import OrderCard from "@/components/dashboard/order-card"
 
 export default function HistoryClient() {
     const router = useRouter()
-    const { orders } = useOrders()
+    const { getAllOrders } = useOrders()
+    const { data: orders, isLoading } = getAllOrders
     const [searchQuery, setSearchQuery] = useState("")
 
     // Filter to show only completed and rejected orders
-    const historyOrders = orders.filter((o) => o.status === "completed" || o.status === "rejected")
+    const historyOrders = useMemo(() => {
+        if (!orders) return []
+        return orders.filter((o) => o.status === "Delivered" || o.status === "Rejected")
+    }, [orders])
 
-    const filteredOrders = historyOrders.filter((order) =>
-        order.userName.toLowerCase().includes(searchQuery.toLowerCase()),
-    )
+    const filteredOrders = useMemo(() => {
+        return historyOrders.filter((order) =>
+            order.shippingName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            order.orderId.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    }, [historyOrders, searchQuery])
 
-    const stats = useMemo(
-        () => ({
-            completed: orders.filter((o) => o.status === "completed").length,
-            rejected: orders.filter((o) => o.status === "rejected").length,
-        }),
-        [orders],
-    )
+    if (isLoading) {
+        return (
+            <div className="flex-1 h-full flex items-center justify-center min-h-[500px]">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    <p className="text-muted-foreground animate-pulse">Loading History...</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="flex-1 p-8 space-y-8">
@@ -64,7 +75,7 @@ export default function HistoryClient() {
                             <div className="relative">
                                 <Search24Regular className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                 <Input
-                                    placeholder="Search by customer name..."
+                                    placeholder="Search by customer name or order ID..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="pl-10 cursor-pointer"
@@ -78,106 +89,11 @@ export default function HistoryClient() {
                                     </p>
                                 ) : (
                                     filteredOrders.map((order, idx) => (
-                                        <motion.div
-                                            key={order.id}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: 0.1 + idx * 0.05 }}
-                                            className={`p-4 rounded-lg border-2 transition-all ${order.status === "rejected"
-                                                    ? "bg-destructive/10 dark:bg-destructive/20 border-destructive/50 dark:border-destructive/40"
-                                                    : "bg-green-50 dark:bg-green-900/40 border-green-200 dark:border-green-700/50"
-                                                }`}
-                                        >
-                                            <div className="space-y-3">
-                                                {/* Order Header */}
-                                                <div className="flex items-start justify-between">
-                                                    <div>
-                                                        <p
-                                                            className={`font-bold ${order.status === "completed" ? "text-green-700 dark:text-green-200" : "text-foreground"}`}
-                                                        >
-                                                            {order.code}
-                                                        </p>
-                                                        <p
-                                                            className={`text-sm ${order.status === "completed" ? "text-green-600 dark:text-green-300" : "text-muted-foreground"}`}
-                                                        >
-                                                            {order.createdAt.toLocaleDateString()}
-                                                        </p>
-                                                    </div>
-                                                    <div
-                                                        className={`px-3 py-1 rounded-full text-xs font-semibold ${order.status === "completed"
-                                                                ? "bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-100"
-                                                                : "bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-100"
-                                                            }`}
-                                                    >
-                                                        {order.status === "completed" ? "Completed" : "Rejected"}
-                                                    </div>
-                                                </div>
-
-                                                {/* Order Details */}
-                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
-                                                    <div>
-                                                        <p
-                                                            className={`${order.status === "completed" ? "text-green-600 dark:text-green-300" : "text-muted-foreground"}`}
-                                                        >
-                                                            Customer
-                                                        </p>
-                                                        <p
-                                                            className={`font-medium ${order.status === "completed" ? "text-green-900 dark:text-green-100" : "text-foreground"}`}
-                                                        >
-                                                            {order.userName}
-                                                        </p>
-                                                    </div>
-                                                    <div>
-                                                        <p
-                                                            className={`${order.status === "completed" ? "text-green-600 dark:text-green-300" : "text-muted-foreground"}`}
-                                                        >
-                                                            Product
-                                                        </p>
-                                                        <p
-                                                            className={`font-medium ${order.status === "completed" ? "text-green-900 dark:text-green-100" : "text-foreground"}`}
-                                                        >
-                                                            {order.productName}
-                                                        </p>
-                                                    </div>
-                                                    <div>
-                                                        <p
-                                                            className={`${order.status === "completed" ? "text-green-600 dark:text-green-300" : "text-muted-foreground"}`}
-                                                        >
-                                                            Quantity
-                                                        </p>
-                                                        <p
-                                                            className={`font-medium ${order.status === "completed" ? "text-green-900 dark:text-green-100" : "text-foreground"}`}
-                                                        >
-                                                            {order.quantity}
-                                                        </p>
-                                                    </div>
-                                                    <div className="md:col-span-1">
-                                                        <p
-                                                            className={`${order.status === "completed" ? "text-green-600 dark:text-green-300" : "text-muted-foreground"}`}
-                                                        >
-                                                            Total Price
-                                                        </p>
-                                                        <p
-                                                            className={`font-bold ${order.status === "completed" ? "text-green-700 dark:text-green-200" : "text-primary"}`}
-                                                        >
-                                                            {order.totalPrice.toFixed(2)} EGP
-                                                        </p>
-                                                    </div>
-                                                    <div className="md:col-span-2">
-                                                        <p
-                                                            className={`${order.status === "completed" ? "text-green-600 dark:text-green-300" : "text-muted-foreground"}`}
-                                                        >
-                                                            Address
-                                                        </p>
-                                                        <p
-                                                            className={`font-medium text-xs ${order.status === "completed" ? "text-green-900 dark:text-green-100" : "text-foreground"}`}
-                                                        >
-                                                            {order.address}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </motion.div>
+                                        <OrderCard
+                                            key={order._id}
+                                            order={order}
+                                            index={idx}
+                                        />
                                     ))
                                 )}
                             </div>

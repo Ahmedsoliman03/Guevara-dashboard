@@ -1,18 +1,27 @@
 export interface Order {
-  id: string
-  code: string
-  status: "Pending" | "In-Progress" | "Delivered" | "Rejected"
-  userName: string
-  productName: string
-  quantity: number
-  totalPrice: number
+  _id: string
+  shippingName: string
   address: string
-  createdAt: Date
-  accepted?: boolean
-  rejected?: boolean
-
+  phone: string
+  note: string
+  products: OrderProduct[]
+  orderId: string
+  createdAt: string
+  finalPrice: number
+  status: "Pending" | "In Progress" | "Delivered" | "Rejected" | "Canceled"
+  paymentMethod: string
+  userRating?: number
 }
-
+interface OrderProduct {
+  name: string,
+  productId: string,
+  unitPrice: number,
+  quantity: number,
+  finalPrice: number,
+}
+export interface OrderResponse {
+  orders: Order[]
+}
 export interface Product {
   _id: string,
   image: {

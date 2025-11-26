@@ -2,7 +2,7 @@
 import { motion } from "framer-motion"
 import { Card, CardContent } from '../ui/card'
 import useStatus from '@/hooks/use-status'
-import { Alert24Regular, CheckmarkCircle24Regular, Clock24Regular, Prohibited24Regular } from '@fluentui/react-icons'
+import { getStatusConfig, OrderStatus } from '@/config/status-config'
 
 interface statusProp {
   type: "history" | "dashboard"
@@ -11,57 +11,22 @@ export default function StatusCards({ type }: statusProp) {
   const { getStatus } = useStatus()
   const { data: statusOfCards, isLoading, error } = getStatus
   console.log(statusOfCards);
-  const statusArr = type == "dashboard" ? statusOfCards?.filter((st) => st.status !== "Canceled") :
+  const statusArr = type == "dashboard" ? statusOfCards :
     statusOfCards?.filter(st => st.status === "Rejected" || st.status === "Delivered")
 
-  const statCards = statusArr ? type == "dashboard" ? [
-    {
-      title: statusArr[0].status,
-      value: statusArr[0].count,
-      icon: Alert24Regular,
-      color: "bg-yellow-100 dark:bg-yellow-900",
-      textColor: "text-yellow-600 dark:text-yellow-300",
-    },
-    {
-      title: statusArr[1].status,
-      value: statusArr[1].count,
-      icon: Clock24Regular,
-      color: "bg-blue-100 dark:bg-blue-900",
-      textColor: "text-blue-600 dark:text-blue-300",
-    },
-    {
-      title: statusArr[2].status,
-      value: statusArr[2].count,
-      icon: CheckmarkCircle24Regular,
-      color: "bg-green-100 dark:bg-green-900",
-      textColor: "text-green-600 dark:text-green-300",
-    },
-    {
-      title: statusArr[3].status,
-      value: statusArr[3].count,
-      icon: Prohibited24Regular,
-      color: "bg-red-100 dark:bg-red-900",
-      textColor: "text-red-600 dark:text-red-300",
-    },
-  ] : [
-    {
-      title: statusArr[0].status,
-      value: statusArr[0].count,
-      icon: CheckmarkCircle24Regular,
-      color: "bg-green-100 dark:bg-green-900",
-      textColor: "text-green-600 dark:text-green-300",
-    },
-    {
-      title: statusArr[1].status,
-      value: statusArr[1].count,
-      icon: Prohibited24Regular,
-      color: "bg-red-100 dark:bg-red-900",
-      textColor: "text-red-600 dark:text-red-300",
-    },
-  ] : []
+  const statCards = statusArr ? statusArr.map(statusData => {
+    const config = getStatusConfig(statusData.status)
+    return {
+      title: statusData.status,
+      value: statusData.count,
+      icon: config.icon,
+      color: config.iconBgColor,
+      textColor: config.iconTextColor,
+    }
+  }) : []
 
   return (
-    <div className={type == "dashboard" ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6` : `grid grid-cols-1 md:grid-cols-2 gap-6`}>
+    <div className={type == "dashboard" ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6` : `grid grid-cols-1 md:grid-cols-2 gap-6`}>
       {statCards.map((stat, idx) => (
         <motion.div
           key={stat.title}

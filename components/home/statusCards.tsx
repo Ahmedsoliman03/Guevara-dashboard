@@ -26,7 +26,7 @@ export default function StatusCards({ type }: statusProp) {
   }) : []
 
   return (
-    <div className={type == "dashboard" ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6` : `grid grid-cols-1 md:grid-cols-2 gap-6`}>
+    <div className={type == "dashboard" ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6` : `grid grid-cols-1 md:grid-cols-2 gap-6`}>
       {statCards.map((stat, idx) => (
         <motion.div
           key={stat.title}

@@ -15,6 +15,7 @@ export default function HistoryClient() {
     const { getAllOrders } = useOrders()
     const { data: orders, isLoading } = getAllOrders
     const [searchQuery, setSearchQuery] = useState("")
+    const [displayCount, setDisplayCount] = useState(10)
 
     // Filter to show only completed and rejected orders
     const historyOrders = useMemo(() => {
@@ -28,6 +29,8 @@ export default function HistoryClient() {
             order.orderId.toLowerCase().includes(searchQuery.toLowerCase())
         )
     }, [historyOrders, searchQuery])
+
+    const displayedOrders = filteredOrders.slice(0, displayCount)
 
     if (isLoading) {
         return (
@@ -83,18 +86,24 @@ export default function HistoryClient() {
                             </div>
 
                             <div className="space-y-4">
-                                {filteredOrders.length === 0 ? (
+                                {displayedOrders.length === 0 ? (
                                     <p className="text-center text-muted-foreground py-8">
                                         {searchQuery ? "No orders found matching your search" : "No history orders yet"}
                                     </p>
                                 ) : (
-                                    filteredOrders.map((order, idx) => (
-                                        <OrderCard
-                                            key={order._id}
-                                            order={order}
-                                            index={idx}
-                                        />
+                                    displayedOrders.map((order, idx) => (
+                                        <OrderCard key={order._id} order={order} index={idx} />
                                     ))
+                                )}
+                                {filteredOrders.length > displayCount && (
+                                    <div className="flex justify-center mt-4">
+                                        <button
+                                            onClick={() => setDisplayCount(displayCount + 10)}
+                                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                                        >
+                                            See More
+                                        </button>
+                                    </div>
                                 )}
                             </div>
                         </div>

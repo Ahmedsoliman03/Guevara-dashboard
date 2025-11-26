@@ -27,7 +27,9 @@ export interface Product {
   image: {
     secure_url: string;
   };
-  name: string;
+  productEnglishName: string;
+  productArabicName: string;
+  companyName: string;
   stock: number;
   onSale: boolean;
   originalPrice: number;
@@ -64,7 +66,7 @@ export interface Category {
 }
 
 export interface AddProductForApi {
-  name: string,
+  productEnglishName: string,
   categoryId: string
   image: File
   stock: number

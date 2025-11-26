@@ -4,7 +4,6 @@ import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { useProducts } from "@/components/providers/products-provider"
 import { ProductForm } from "@/components/products/product-form"
 import type { AddProductFormData } from "@/lib/validation"
 import type { AddProductForApi, Product } from "@/types"
@@ -54,7 +53,7 @@ export default function ProductsClient() {
         if (searchTerm && result) {
             const searchLower = searchTerm.toLowerCase()
             result = result.filter((p: Product) =>
-                p.name.toLowerCase().includes(searchLower)
+                p.productEnglishName.toLowerCase().includes(searchLower)
             )
         }
 
@@ -73,7 +72,9 @@ export default function ProductsClient() {
     // Add product
     const handleAddSubmit = (data: AddProductFormData) => {
         const mainData = {
-            name: data.name,
+               productEnglishName: data.productEnglishName,
+                productArabicName: data.productArabicName,
+                companyName: data.companyName,
             image: data.image,
             categoryId: categoryId ? categoryId : categoryData?.[0]?._id ?? "",
             stock: data.stock,
@@ -105,7 +106,9 @@ export default function ProductsClient() {
         console.log(data);
         if (editingProduct && id) {
             const mainData = {
-                name: data.name,
+                productEnglishName: data.productEnglishName,
+                productArabicName: data.productArabicName,
+                companyName: data.companyName,
                 image: data.image,
                 categoryId: data.categoryId,
                 stock: data.stock,
@@ -149,7 +152,7 @@ export default function ProductsClient() {
 
     const convertProductToFormData = (product: Product): Partial<AddProductFormData> => {
         return {
-            name: product.name,
+            productEnglishName: product.productEnglishName,
             categoryId: product.categoryId._id,
             stock: product.stock,
             isSale: product.onSale,
@@ -261,7 +264,7 @@ export default function ProductsClient() {
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={product.image.secure_url || "/placeholder.jpg"}
-                                                alt={product.name}
+                                                alt={product.productEnglishName}
                                                 className="w-full h-full object-cover"
                                             />
                                             {product.onSale && (
@@ -276,9 +279,12 @@ export default function ProductsClient() {
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <p className="text-xs text-muted-foreground font-medium">{product.categoryId.name}</p>
-                                                    <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.name}</h3>
+                                                   <div className="flex items-center gap-1">
+                                                     <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productEnglishName}</h3>
+                                                    <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productArabicName}</h3>
+                                                   </div>
                                                 </div>
-                                                <Box24Regular className="w-5 h-5 text-muted-foreground flex-shrink-0 ml-2" />
+                                                <Box24Regular className="w-5 h-5 text-muted-foreground  ml-2" />
                                             </div>
 
                                             {/* Pricing */}
@@ -401,7 +407,7 @@ export default function ProductsClient() {
                     >
                         <div className="space-y-4">
                             <p className="text-foreground">
-                                Are you sure you want to delete the product <strong>{deletingProduct.name}</strong>?
+                                Are you sure you want to delete the product <strong>{deletingProduct.productEnglishName}</strong>?
                             </p>
                             <div className="flex gap-2 justify-end">
                                 <Button variant="outline" onClick={() => setDeletingProduct(null)}>

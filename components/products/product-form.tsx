@@ -33,7 +33,9 @@ export function ProductForm({
 }: ProductFormProps) {
   // Define form values type to allow empty strings for numeric fields
   type ProductFormValues = {
-    name: string
+    productEnglishName: string
+    productArabicName: string
+    companyName: string
     categoryId: string
     image: File | undefined
     stock: number | ""
@@ -45,7 +47,9 @@ export function ProductForm({
   }
 
   const initialValues: ProductFormValues = {
-    name: propInitialValues?.name || "",
+    productEnglishName: propInitialValues?.productEnglishName || "",
+    productArabicName: propInitialValues?.productArabicName || "",
+    companyName: propInitialValues?.companyName || "",
     // Handle categoryId which might be an object if passed from Product
     categoryId: typeof propInitialValues?.categoryId === 'object'
       ? (propInitialValues.categoryId as any)._id
@@ -63,7 +67,9 @@ export function ProductForm({
   // Make image optional when editing (if initialImage is provided)
   const validationSchema = initialImage
     ? yup.object({
-      name: yup.string().required("Product name is required"),
+       productEnglishName: yup.string().required("English product name is required"),
+        productArabicName: yup.string().required("Arabic product name is required"),
+        companyName: yup.string().required("Company name is required"),
       categoryId: yup
         .string()
         .required("Category is required"),
@@ -130,14 +136,37 @@ export function ProductForm({
           {/* Category & Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <ProductCategorySelect />
+            
             <div className="space-y-2">
-              <label className="text-sm font-medium">Product Name</label>
+              <label className="text-sm font-medium">Company Name</label>
               <Field
-                name="name"
-                placeholder="Enter product name"
+                name="companyName"
+                placeholder="Enter Company name"
                 className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <ErrorMessage name="name" component="div" className="text-sm text-destructive" />
+              <ErrorMessage name="companyName" component="div" className="text-sm text-destructive" />
+            </div>
+          </div>
+          {/* Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+           <div className="space-y-2">
+              <label className="text-sm font-medium">Product Arabic Name</label>
+              <Field
+                name="productArabicName"
+                placeholder="Enter Arabic name"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <ErrorMessage name="productArabicName" component="div" className="text-sm text-destructive" />
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Product English Name</label>
+              <Field
+                name="productEnglishName"
+                placeholder="Enter English name"
+                className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <ErrorMessage name="productEnglishName" component="div" className="text-sm text-destructive" />
             </div>
           </div>
 

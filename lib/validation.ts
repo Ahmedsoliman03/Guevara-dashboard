@@ -1,7 +1,9 @@
 import * as yup from "yup"
 
 export const addProductSchema = yup.object({
-  name: yup.string().required("Product name is required"),
+  productEnglishName: yup.string().required("English product name is required"),
+        productArabicName: yup.string().required("Arabic product name is required"),
+  companyName: yup.string().required("Company name is required"),
   categoryId: yup
     .string()
     .required("Category is required"),

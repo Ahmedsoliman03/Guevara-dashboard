@@ -43,7 +43,7 @@ const useOrders = () => {
       }
       // TODO: Replace with actual endpoint
       const res = await api.patch(`/order/inprogress-order`, data)
-      sendMessage(order.shippingName, order.phone, order._id)
+      sendMessage(order.shippingName, order.phone, order.orderId)
       return res.data
     },
     onSuccess: () => {
@@ -60,7 +60,7 @@ const useOrders = () => {
         status: "Rejected",
       }
       const res = await api.patch(`/order/reject-order`, data)
-      sendMessage(order.shippingName, order.phone, order._id, reason)
+      sendMessage(order.shippingName, order.phone, order.orderId, reason)
       return res.data
     },
     onSuccess: () => {

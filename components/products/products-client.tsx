@@ -153,6 +153,8 @@ export default function ProductsClient() {
     const convertProductToFormData = (product: Product): Partial<AddProductFormData> => {
         return {
             productEnglishName: product.productEnglishName,
+            productArabicName: product.productArabicName,
+            companyName: product.companyName,
             categoryId: product.categoryId._id,
             stock: product.stock,
             isSale: product.onSale,

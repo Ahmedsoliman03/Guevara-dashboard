@@ -6,7 +6,7 @@ import {
     Prohibited24Regular,
 } from "@fluentui/react-icons"
 
-export type OrderStatus = "In Progress" | "Delivered" | "Rejected" | "Canceled" | "Pending"
+export type OrderStatus = "In Progress" | "Delivered" | "Rejected" | "Canceled" | "Pending" | "Deleted"
 
 export interface StatusConfig {
     label: string
@@ -64,6 +64,15 @@ export const STATUS_CONFIG: Record<OrderStatus, StatusConfig> = {
         iconBgColor: "bg-gray-100 dark:bg-gray-800",
         iconTextColor: "text-gray-600 dark:text-gray-300",
     },
+    "Deleted": {
+        label: "Deleted",
+        icon: CalendarCancel24Color,
+        badgeColor: "bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-white",
+        cardBgColor: "bg-yellow-50 dark:bg-yellow-950",
+        cardBorderColor: "border-yellow-200 dark:border-yellow-800",
+        iconBgColor: "bg-yellow-100 dark:bg-yellow-800",
+        iconTextColor: "text-yellow-600 dark:text-yellow-300",
+    }
 }
 
 // Helper function to get status config

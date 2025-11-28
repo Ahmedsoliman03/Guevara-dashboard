@@ -72,9 +72,9 @@ export default function ProductsClient() {
     // Add product
     const handleAddSubmit = (data: AddProductFormData) => {
         const mainData = {
-               productEnglishName: data.productEnglishName,
-                productArabicName: data.productArabicName,
-                companyName: data.companyName,
+            productEnglishName: data.productEnglishName,
+            productArabicName: data.productArabicName,
+            companyName: data.companyName,
             image: data.image,
             categoryId: categoryId ? categoryId : categoryData?.[0]?._id ?? "",
             stock: data.stock,
@@ -281,10 +281,10 @@ export default function ProductsClient() {
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <p className="text-xs text-muted-foreground font-medium">{product.categoryId.name}</p>
-                                                   <div className="flex items-center gap-1">
-                                                     <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productEnglishName}</h3>
-                                                    <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productArabicName}</h3>
-                                                   </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productEnglishName}</h3>
+                                                        <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productArabicName}</h3>
+                                                    </div>
                                                 </div>
                                                 <Box24Regular className="w-5 h-5 text-muted-foreground  ml-2" />
                                             </div>
@@ -419,8 +419,9 @@ export default function ProductsClient() {
                                     variant="destructive"
                                     onClick={() => handleDelete(deletingProduct)}
                                     disabled={deleteProduct.isPending}
+                                    loading={deleteProduct.isPending}
                                 >
-                                    {deleteProduct.isPending ? "Deleting..." : "Delete"}
+                                    Delete
                                 </Button>
                             </div>
                         </div>

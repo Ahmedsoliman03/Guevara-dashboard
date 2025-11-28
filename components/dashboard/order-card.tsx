@@ -99,7 +99,7 @@ export default function OrderCard({ order, index, onAccept, onReject, onComplete
                             </div>
                             <div>
                                 <p className="text-muted-foreground">Total Price</p>
-                                <p className="font-bold text-primary text-lg">{order.finalPrice.toFixed(2)} EGP</p>
+                                <p className="font-bold text-primary text-[12px] md:text-md">{order.finalPrice.toFixed(2)} EGP</p>
                             </div>
 
                         </div>

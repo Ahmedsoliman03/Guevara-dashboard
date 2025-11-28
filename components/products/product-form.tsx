@@ -67,9 +67,9 @@ export function ProductForm({
   // Make image optional when editing (if initialImage is provided)
   const validationSchema = initialImage
     ? yup.object({
-       productEnglishName: yup.string().required("English product name is required"),
-        productArabicName: yup.string().required("Arabic product name is required"),
-        companyName: yup.string().required("Company name is required"),
+      productEnglishName: yup.string().required("English product name is required"),
+      productArabicName: yup.string().required("Arabic product name is required"),
+      companyName: yup.string().required("Company name is required"),
       categoryId: yup
         .string()
         .required("Category is required"),
@@ -136,7 +136,7 @@ export function ProductForm({
           {/* Category & Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
             <ProductCategorySelect />
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Company Name</label>
               <Field
@@ -149,7 +149,7 @@ export function ProductForm({
           </div>
           {/* Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-           <div className="space-y-2">
+            <div className="space-y-2">
               <label className="text-sm font-medium">Product Arabic Name</label>
               <Field
                 name="productArabicName"
@@ -158,7 +158,7 @@ export function ProductForm({
               />
               <ErrorMessage name="productArabicName" component="div" className="text-sm text-destructive" />
             </div>
-            
+
             <div className="space-y-2">
               <label className="text-sm font-medium">Product English Name</label>
               <Field
@@ -197,9 +197,9 @@ export function ProductForm({
           <motion.div whileTap={{ scale: 0.98 }}>
             <Button
               disabled={isLoading || isSubmitting}
-
+              loading={isLoading || isSubmitting}
               type="submit" size="lg" className="w-full">
-              {isLoading || isSubmitting ? "Loading..." : submitButtonText}
+              {submitButtonText}
             </Button>
           </motion.div>
         </Form>

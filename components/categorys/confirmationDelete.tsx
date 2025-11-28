@@ -26,9 +26,10 @@ export default function ConfirmationDelete({ setDeletingCategory, deletingCatego
           <Button
             variant="destructive"
             disabled={isLoading}
+            loading={isLoading}
             onClick={() => handleDelete(deletingCategory._id)}
           >
-            {isLoading ? "Deleting..." : "Delete"}
+            Delete
           </Button>
         </div>
       </div>

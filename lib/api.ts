@@ -11,9 +11,11 @@ const api = axios.create({
 
 // Request interceptor: attach token from cookie
 api.interceptors.request.use((config) => {
-  const token = Cookies.get("accessToken");
-  if (token) {
-    config.headers.Authorization = `System ${token}`;
+  if (typeof window !== "undefined") {
+    const token = Cookies.get("accessToken");
+    if (token) {
+      config.headers.Authorization = `System ${token}`;
+    }
   }
   return config;
 });
@@ -23,10 +25,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      // Token expired or unauthorized
-      Cookies.remove("accessToken", { path: "/" });
-      // Redirect to login page
-      window.location.href = "/";
+      if (typeof window !== "undefined") {
+        // Token expired or unauthorized
+        Cookies.remove("accessToken", { path: "/" });
+        // Redirect to login page
+        window.location.href = "/";
+      }
     }
     return Promise.reject(error);
   }

@@ -11,7 +11,7 @@ import { CategoryPhotoUpload } from "./category-photo-upload"
 
 
 interface CategoryFormProps {
-  onSubmit: (data: AddCategoryFormData , id?:string ) => void
+  onSubmit: (data: AddCategoryFormData, id?: string) => void
   initialValues?: Partial<AddCategoryFormData>
   submitButtonText?: string
   initialImage?: string
@@ -23,7 +23,7 @@ interface CategoryFormProps {
 export function CategoryForm({
   onSubmit,
   initialValues: propInitialValues,
-    isLoading,
+  isLoading,
   submitButtonText = isLoading ? "Loading..." : "Add Category",
   initialImage,
   showCard = true,
@@ -37,20 +37,20 @@ export function CategoryForm({
   // Make photo optional when editing (if initialImage is provided)
   const validationSchema = initialImage
     ? yup.object({
-        name: yup.string().required("Category name is required"),
-      
-        photo: yup.mixed<File>().optional(),
-      })
+      name: yup.string().required("Category name is required"),
+
+      photo: yup.mixed<File>().optional(),
+    })
     : addCategorySchema
 
   const handleSubmit = (values: AddCategoryFormData, { resetForm }: any) => {
-    if(id){
-      onSubmit(values , id)
-      
-      
+    if (id) {
+      onSubmit(values, id)
+
+
     }
-    else{
-    onSubmit(values)
+    else {
+      onSubmit(values)
     }
     if (!initialImage) {
       resetForm()
@@ -68,14 +68,14 @@ export function CategoryForm({
         {/* Category Name */}
         <CategoryNameField />
 
-  
+
 
         {/* Photo Upload */}
         <CategoryPhotoUpload initialImage={initialImage} />
 
         {/* Submit Button */}
         <motion.div whileTap={{ scale: 0.98 }}>
-          <Button disabled={isLoading} type="submit" size="lg" className="w-full">
+          <Button disabled={isLoading} loading={isLoading} type="submit" size="lg" className="w-full">
             {submitButtonText}
           </Button>
         </motion.div>

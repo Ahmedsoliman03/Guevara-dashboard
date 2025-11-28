@@ -2,15 +2,17 @@
 import { motion } from "framer-motion"
 import { Card, CardContent } from '../ui/card'
 import useStatus from '@/hooks/use-status'
-import { getStatusConfig, OrderStatus } from '@/config/status-config'
+import { getStatusConfig } from '@/config/status-config'
+
 
 interface statusProp {
   type: "history" | "dashboard"
 }
+
 export default function StatusCards({ type }: statusProp) {
   const { getStatus } = useStatus()
-  const { data: statusOfCards, isLoading, error } = getStatus
-  console.log(statusOfCards);
+  const { data: statusOfCards } = getStatus
+
   const statusArr = type == "dashboard" ? statusOfCards :
     statusOfCards?.filter(st => st.status === "Rejected" || st.status === "Delivered")
 
@@ -26,7 +28,7 @@ export default function StatusCards({ type }: statusProp) {
   }) : []
 
   return (
-    <div className={type == "dashboard" ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6` : `grid grid-cols-1 md:grid-cols-2 gap-6`}>
+    <div className={type == "dashboard" ? `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6` : `grid grid-cols-1 md:grid-cols-2 gap-6`}>
       {statCards.map((stat, idx) => (
         <motion.div
           key={stat.title}

@@ -8,7 +8,7 @@ export interface Order {
   orderId: string
   createdAt: string
   finalPrice: number
-  status: "Pending" | "In Progress" | "Delivered" | "Rejected" | "Canceled"
+  status: "Pending" | "In Progress" | "Delivered" | "Rejected" | "Canceled" | "Deleted"
   paymentMethod: string
   userRating?: number
 }

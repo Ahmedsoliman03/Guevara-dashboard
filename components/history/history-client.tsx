@@ -9,6 +9,8 @@ import { Search24Regular } from "@fluentui/react-icons"
 import StatusCards from "@/components/home/statusCards"
 import useOrders from "@/hooks/use-orders"
 import OrderCard from "@/components/dashboard/order-card"
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 export default function HistoryClient() {
     const router = useRouter()
@@ -36,7 +38,7 @@ export default function HistoryClient() {
         return (
             <div className="flex-1 h-full flex items-center justify-center min-h-[500px]">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                    <Spinner className="h-12 w-12" />
                     <p className="text-muted-foreground animate-pulse">Loading History...</p>
                 </div>
             </div>
@@ -97,12 +99,11 @@ export default function HistoryClient() {
                                 )}
                                 {filteredOrders.length > displayCount && (
                                     <div className="flex justify-center mt-4">
-                                        <button
+                                        <Button
                                             onClick={() => setDisplayCount(displayCount + 10)}
-                                            className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                                         >
                                             See More
-                                        </button>
+                                        </Button>
                                     </div>
                                 )}
                             </div>

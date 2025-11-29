@@ -22,7 +22,7 @@ export default function DashboardClient() {
 
     // Filter orders to show only those that are NOT Delivered and NOT Rejected
     const activeOrders = ordersData?.filter(
-        (order) => order.status !== "Delivered" && order.status !== "Rejected"
+        (order) => order.status !== "Delivered" && order.status !== "Rejected" && order.status !== "Deleted"
     )
 
     // Pagination state for active orders

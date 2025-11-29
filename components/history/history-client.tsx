@@ -11,30 +11,36 @@ import useOrders from "@/hooks/use-orders"
 import OrderCard from "@/components/dashboard/order-card"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
+import { Order } from "@/types"
+import useStatus from "@/hooks/use-status"
 
 export default function HistoryClient() {
     const router = useRouter()
     const { getAllOrders } = useOrders()
-    const { data: orders, isLoading } = getAllOrders
+    const { data: orders, isLoading: orderLoading } = getAllOrders
+    const { getStatus } = useStatus()
+    const { isLoading: statusLoading } = getStatus
     const [searchQuery, setSearchQuery] = useState("")
     const [displayCount, setDisplayCount] = useState(10)
 
     // Filter to show only completed and rejected orders
-    const historyOrders = useMemo(() => {
+    const historyOrders = useMemo<Order[]>(() => {
         if (!orders) return []
-        return orders.filter((o) => o.status === "Delivered" || o.status === "Rejected")
+        return orders.filter((o) => o.status === "Delivered" || o.status === "Rejected"
+            || o.status === "Deleted"
+        )
     }, [orders])
 
-    const filteredOrders = useMemo(() => {
+    const filteredOrders = useMemo<Order[]>(() => {
         return historyOrders.filter((order) =>
             order.shippingName.toLowerCase().includes(searchQuery.toLowerCase()) ||
             order.orderId.toLowerCase().includes(searchQuery.toLowerCase())
         )
     }, [historyOrders, searchQuery])
 
-    const displayedOrders = filteredOrders.slice(0, displayCount)
+    const displayedOrders = [...(filteredOrders)].reverse().slice(0, displayCount)
 
-    if (isLoading) {
+    if (orderLoading || statusLoading) {
         return (
             <div className="flex-1 h-full flex items-center justify-center min-h-[500px]">
                 <div className="flex flex-col items-center gap-4">

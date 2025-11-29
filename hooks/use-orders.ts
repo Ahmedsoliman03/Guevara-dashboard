@@ -52,7 +52,6 @@ const useOrders = () => {
   })
 
   // Reject order
-  // Reject order
   const rejectOrderMutation = useMutation({
     mutationFn: async ({ order, reason }: { order: Order; reason?: string }) => {
       const data = {
@@ -67,7 +66,22 @@ const useOrders = () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] })
     },
   })
-  // Reject order
+
+  // Delete order
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (order: Order) => {
+      const data = {
+        id: order._id,
+        status: "Rejected",
+      }
+      const res = await api.patch(`/order/delete-order`, data)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] })
+    },
+  })
+  // Confirm order
   const confirmOrderMutation = useMutation({
     mutationFn: async (id: string) => {
       const data = {
@@ -86,6 +100,7 @@ const useOrders = () => {
     getAllOrders,
     acceptOrder: acceptOrderMutation,
     rejectOrder: rejectOrderMutation,
+    deleteOrder: deleteOrderMutation,
     confirmOrder: confirmOrderMutation,
     sendMessage
   }

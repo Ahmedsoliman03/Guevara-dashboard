@@ -8,6 +8,7 @@ import {
     CheckmarkCircle24Regular,
     DismissCircle24Regular,
     Checkmark24Regular,
+    Delete24Regular,
 } from "@fluentui/react-icons"
 import { formatDate } from "@/utils/format"
 import { getStatusConfig } from "@/config/status-config"
@@ -19,15 +20,17 @@ interface OrderCardProps {
     onAccept?: (id: string) => Promise<void> | void
     onReject?: (id: string, reason?: string) => Promise<void> | void
     onComplete?: (id: string) => Promise<void> | void
+    onDelete?: (id: string) => Promise<void> | void
 }
 
-export default function OrderCard({ order, index, onAccept, onReject, onComplete }: OrderCardProps) {
+export default function OrderCard({ order, index, onAccept, onReject, onComplete, onDelete }: OrderCardProps) {
     const statusConfig = getStatusConfig(order.status)
     const [isAccepting, setIsAccepting] = useState(false)
     const [isRejecting, setIsRejecting] = useState(false)
     const [isCompleting, setIsCompleting] = useState(false)
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false)
     const [rejectReason, setRejectReason] = useState("")
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const handleAcceptClick = async () => {
         if (!onAccept) return
@@ -62,6 +65,16 @@ export default function OrderCard({ order, index, onAccept, onReject, onComplete
             await onComplete(order._id)
         } finally {
             setIsCompleting(false)
+        }
+    }
+
+    const handleDeleteClick = async () => {
+        if (!onDelete) return
+        setIsDeleting(true)
+        try {
+            await onDelete(order._id)
+        } finally {
+            setIsDeleting(false)
         }
     }
 
@@ -207,6 +220,21 @@ export default function OrderCard({ order, index, onAccept, onReject, onComplete
                                         <Checkmark24Regular className="w-4 h-4 mr-2" />
                                     )}
                                     Mark Completed
+                                </Button>
+                            </motion.div>
+                            <motion.div whileTap={{ scale: 0.95 }}>
+                                <Button
+                                    size="sm"
+                                    className="bg-green-600 hover:bg-green-700 cursor-pointer"
+                                    onClick={handleDeleteClick}
+                                    disabled={isDeleting}
+                                >
+                                    {isDeleting ? (
+                                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                                    ) : (
+                                        <Delete24Regular className="w-4 h-4 mr-2" />
+                                    )}
+                                    Delete
                                 </Button>
                             </motion.div>
                         </div>

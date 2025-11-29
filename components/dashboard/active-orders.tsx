@@ -11,9 +11,10 @@ interface ActiveOrdersProps {
     onAccept: (id: string) => Promise<void> | void
     onReject: (id: string, reason?: string) => Promise<void> | void
     onComplete: (id: string) => Promise<void> | void
+    OnDelete: (id: string) => Promise<void> | void
 }
 
-export default function ActiveOrders({ orders, onAccept, onReject, onComplete }: ActiveOrdersProps) {
+export default function ActiveOrders({ orders, onAccept, onReject, onComplete, OnDelete }: ActiveOrdersProps) {
     const router = useRouter()
 
     return (
@@ -47,6 +48,7 @@ export default function ActiveOrders({ orders, onAccept, onReject, onComplete }:
                                     index={idx}
                                     onAccept={onAccept}
                                     onReject={onReject}
+                                    onDelete={OnDelete}
                                     onComplete={onComplete}
                                 />
                             ))

@@ -13,7 +13,7 @@ import { Order } from "@/types"
 
 export default function DashboardClient() {
     const router = useRouter()
-    const { getAllOrders, acceptOrder, rejectOrder, confirmOrder } = useOrders()
+    const { getAllOrders, acceptOrder, rejectOrder, confirmOrder, deleteOrder } = useOrders()
     const { data: ordersData, isLoading: isOrdersLoading, isError } = getAllOrders
     const { getStatus } = useStatus()
     const { isLoading: isStatusLoading } = getStatus
@@ -29,11 +29,16 @@ export default function DashboardClient() {
     const [displayCount, setDisplayCount] = useState(10)
     const displayedActiveOrders = activeOrders?.slice(0, displayCount)
 
-    // Mock handler functions for UI interaction
     const handleAccept = async (orderId: string) => {
         const order = ordersData?.find((o) => o._id === orderId)
         if (order) {
             await acceptOrder.mutateAsync(order)
+        }
+    }
+    const handleDelete = async (orderId: string) => {
+        const order = ordersData?.find((o) => o._id === orderId)
+        if (order) {
+            await deleteOrder.mutateAsync(order)
         }
     }
 
@@ -72,6 +77,7 @@ export default function DashboardClient() {
                 orders={displayedActiveOrders}
                 onAccept={handleAccept}
                 onReject={handleReject}
+                OnDelete={handleDelete}
                 onComplete={handleComplete}
             />
             {activeOrders && activeOrders.length > displayCount && (

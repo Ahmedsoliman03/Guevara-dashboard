@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ProductForm } from "@/components/products/product-form"
 import type { AddProductFormData } from "@/lib/validation"
@@ -66,7 +67,7 @@ export default function ProductsClient() {
             )
         }
 
-        return result
+        return result ? [...result].reverse() : []
     }, [products, selectedCategory, selectedCompany, searchTerm])
 
     // Number of products
@@ -225,7 +226,7 @@ export default function ProductsClient() {
                     {isPending ? (
                         <ProductLoadingSkeleton />
                     ) : (
-                        [...(filteredProducts || [])].reverse()?.map((product: Product, idx: number) => (
+                        filteredProducts?.map((product: Product, idx: number) => (
                             <motion.div
                                 key={product._id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -237,15 +238,17 @@ export default function ProductsClient() {
                                     <CardContent className="p-0">
                                         {/* Product Image */}
                                         <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={product.image.secure_url || "/placeholder.jpg"}
                                                 alt={product.productEnglishName}
-                                                className="w-full h-full object-cover"
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                                className="object-cover transition-transform duration-300 group-hover:scale-110"
+                                                priority={idx < 4}
                                             />
                                             {product.onSale && (
-                                                <div className="absolute top-2 right-2 bg-destructive text-white px-3 py-1 rounded-full text-sm font-bold">
-                                                    {product.discountPercent}% {product.companyName}
+                                                <div className="absolute top-2 right-2 bg-destructive text-white px-3 py-1 rounded-full text-sm font-bold shadow-md transform -rotate-1 group-hover:rotate-0 transition-transform">
+                                                    {product.discountPercent}% OFF
                                                 </div>
                                             )}
                                         </div>

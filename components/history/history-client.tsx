@@ -38,7 +38,9 @@ export default function HistoryClient() {
         )
     }, [historyOrders, searchQuery])
 
-    const displayedOrders = [...(filteredOrders)].reverse().slice(0, displayCount)
+    const displayedOrders = useMemo(() => {
+        return [...filteredOrders].reverse().slice(0, displayCount)
+    }, [filteredOrders, displayCount])
 
     if (orderLoading || statusLoading) {
         return (

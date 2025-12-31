@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { CategoryForm } from "@/components/categorys/category-form"
 import type { AddCategoryFormData } from "@/lib/validation"
@@ -82,6 +83,10 @@ export default function CategoriesClient() {
         });
     }
 
+    const sortedCategories = useMemo(() => {
+        return [...(CategoryData || [])].reverse();
+    }, [CategoryData]);
+
     return (
         <div className="p-8 space-y-8 w-full">
             {/* Header */}
@@ -108,7 +113,7 @@ export default function CategoriesClient() {
                     {isPending ? (
                         <CategoryLoadingSkeleton />
                     ) :
-                        [...(CategoryData || [])].reverse().map((category, idx) => (
+                        sortedCategories.map((category: Category, idx: number) => (
                             <motion.div
                                 key={category._id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -121,11 +126,13 @@ export default function CategoriesClient() {
                                     <CardContent className="p-0 flex flex-col h-full">
                                         {/* Category Image */}
                                         <div className="relative w-full h-48 bg-muted overflow-hidden shrink-0">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={category.logo.secure_url || "/placeholder.jpg"}
                                                 alt={category.name}
-                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                                fill
+                                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                                priority={idx < 4}
                                             />
                                             <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         </div>

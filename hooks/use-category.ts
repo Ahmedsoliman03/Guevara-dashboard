@@ -1,7 +1,7 @@
 "use client"
 import api from "@/lib/api"
 import { AddCategoryFormData } from "@/lib/validation";
-import { Category } from "@/types";
+import { Category, CategoryCompany } from "@/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useCallback } from "react"
 
@@ -13,7 +13,7 @@ const useCategory = () => {
     queryFn: async () => {
       const res = await api.get("/category"); // replace with real endpoint
 
-      return res.data.data.categories  as Category[];
+      return res.data.data.categories as Category[];
     },
     staleTime: 1000 * 10,
   });
@@ -26,8 +26,8 @@ const useCategory = () => {
       for (const key in data) {
         formData.append(key, (data as any)[key]);
       }
-      const res = await api.post("/category", formData );
-      
+      const res = await api.post("/category", formData);
+
       return res.data;
     },
     onSuccess: () => {
@@ -38,7 +38,7 @@ const useCategory = () => {
   // Update Category item
   const updateCategory = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: AddCategoryFormData }) => {
-        const formData = new FormData();
+      const formData = new FormData();
       for (const key in data) {
         formData.append(key, (data as any)[key]);
       }
@@ -61,11 +61,21 @@ const useCategory = () => {
     },
   });
 
+  // get companies of categoryies
+  const getCompaniesOfCategory = useQuery({
+    queryKey: ["companies"],
+    queryFn: async () => {
+      const res = await api.get(`/category/companies`)
+      return res.data.data as CategoryCompany[]
+    },
+    staleTime: 1000 * 10,
+  })
   return {
     getAllCategory,
     addToCategory,
     updateCategory,
     deleteCategory,
+    getCompaniesOfCategory,
   };
 };
 

@@ -21,17 +21,19 @@ import useCategory from "@/hooks/use-category"
 import { formatDate } from "@/utils/format"
 import ProductLoadingSkeleton from "./product-loading-skeleton"
 
-import { Input } from "@/components/ui/input"
+import { ProductFilters } from "./product-filters"
 
 export default function ProductsClient() {
 
     // state
     const [selectedCategory, setSelectedCategory] = useState<string>("All")
+    const [selectedCompany, setSelectedCompany] = useState<string>("All")
     const [isAddModalOpen, setIsAddModalOpen] = useState(false)
     const [editingProduct, setEditingProduct] = useState<Product | null>(null)
     const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
     const { categoryId } = categoriesContext()
     const [searchTerm, setSearchTerm] = useState("")
+    const { getCompaniesOfCategory: { data: companies, isPending: companiesLoading } } = useCategory()
 
     // Data
     const { addProduct } = useProduct()
@@ -40,7 +42,7 @@ export default function ProductsClient() {
     const { getAllProducts, updateProduct, deleteProduct } = useProduct()
     const { data: products, isPending, error } = getAllProducts({ key: selectedCategory })
 
-    // Filter products by category and search term
+    // Filter products by category, company and search term
     const filteredProducts = useMemo(() => {
         let result = products
 
@@ -49,16 +51,23 @@ export default function ProductsClient() {
             result = result?.filter((p: Product) => p.categoryId.name === selectedCategory)
         }
 
-        // Search filter - simple case-insensitive search by product name
+        // Company filter
+        if (selectedCompany !== "All") {
+            result = result?.filter((p: Product) => p.companyName === selectedCompany)
+        }
+
+        // Search filter - simple case-insensitive search
         if (searchTerm && result) {
             const searchLower = searchTerm.toLowerCase()
             result = result.filter((p: Product) =>
-                p.productEnglishName.toLowerCase().includes(searchLower)
+                p.productEnglishName.toLowerCase().includes(searchLower) ||
+                p.productArabicName.toLowerCase().includes(searchLower) ||
+                p.companyName.toLowerCase().includes(searchLower)
             )
         }
 
         return result
-    }, [products, selectedCategory, searchTerm])
+    }, [products, selectedCategory, selectedCompany, searchTerm])
 
     // Number of products
     const numberofProducts = useMemo(() => {
@@ -197,53 +206,18 @@ export default function ProductsClient() {
                 </div>
             </motion.div>
 
-            {/* Search and Filter */}
-            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex flex-wrap gap-2">
-                    <motion.button
-                        onClick={() => setSelectedCategory("All")}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 1 * 0.05 }}
-                        className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === "All"
-                            ? "bg-primary text-primary-foreground shadow-lg"
-                            : "bg-card border border-border text-foreground hover:border-primary"
-                            }`}
-                    >
-                        All
-                        <span className="ml-2 text-xs">({numberofProducts})</span>
-                    </motion.button>
-                    {categoryData?.map((category, idx) => (
-                        <motion.button
-                            key={category._id}
-                            onClick={() => setSelectedCategory(category.name)}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: idx * 0.05 }}
-                            className={`px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === category.name
-                                ? "bg-primary text-primary-foreground shadow-lg"
-                                : "bg-card border border-border text-foreground hover:border-primary"
-                                }`}
-                        >
-                            {category.name}
-                            <span className="ml-2 text-xs">({category.productNum})</span>
-                        </motion.button>
-                    ))}
-                </motion.div>
-
-                <div className="w-full md:w-72">
-                    <Input
-                        placeholder="Search products..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full"
-                    />
-                </div>
-            </div>
+            {/* Search and Filters */}
+            <ProductFilters
+                categories={categoryData || []}
+                categoryCompanies={companies || []}
+                selectedCategory={selectedCategory}
+                setSelectedCategory={setSelectedCategory}
+                selectedCompany={selectedCompany}
+                setSelectedCompany={setSelectedCompany}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                isLoading={isPending || companiesLoading}
+            />
 
             {/* Products Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -251,7 +225,7 @@ export default function ProductsClient() {
                     {isPending ? (
                         <ProductLoadingSkeleton />
                     ) : (
-                        filteredProducts?.map((product: Product, idx: number) => (
+                        [...(filteredProducts || [])].reverse()?.map((product: Product, idx: number) => (
                             <motion.div
                                 key={product._id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -271,7 +245,7 @@ export default function ProductsClient() {
                                             />
                                             {product.onSale && (
                                                 <div className="absolute top-2 right-2 bg-destructive text-white px-3 py-1 rounded-full text-sm font-bold">
-                                                    {product.discountPercent}%
+                                                    {product.discountPercent}% {product.companyName}
                                                 </div>
                                             )}
                                         </div>
@@ -281,9 +255,9 @@ export default function ProductsClient() {
                                             <div className="flex items-start justify-between">
                                                 <div className="flex-1">
                                                     <p className="text-xs text-muted-foreground font-medium">{product.categoryId.name}</p>
-                                                    <div className="flex items-center gap-1">
-                                                        <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productEnglishName}</h3>
-                                                        <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productArabicName}</h3>
+                                                    <div className="flex items-center gap-1 justify-between">
+                                                        <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">{product.productEnglishName.slice(0, 20)}...</h3>
+                                                        <h3 className="text-lg font-bold text-foreground mt-1 line-clamp-2">QTY: {product.stock}</h3>
                                                     </div>
                                                 </div>
                                                 <Box24Regular className="w-5 h-5 text-muted-foreground  ml-2" />
@@ -355,9 +329,11 @@ export default function ProductsClient() {
                     <p className="text-muted-foreground mb-4">
                         {searchTerm
                             ? `No products found matching "${searchTerm}"`
-                            : selectedCategory === "All"
-                                ? "No products available"
-                                : `No products found in ${selectedCategory} category`}
+                            : selectedCompany !== "All"
+                                ? `No products found for company "${selectedCompany}" in "${selectedCategory}"`
+                                : selectedCategory === "All"
+                                    ? "No products available"
+                                    : `No products found in ${selectedCategory} category`}
                     </p>
                     {selectedCategory === "All" && (
                         <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">

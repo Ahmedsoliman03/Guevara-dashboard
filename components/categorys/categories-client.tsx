@@ -115,39 +115,47 @@ export default function CategoriesClient() {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.9 }}
                                 transition={{ delay: idx * 0.05 }}
+                                className="h-full"
                             >
-                                <Card className="hover:shadow-lg transition-shadow h-full py-0">
-                                    <CardContent className="p-0">
+                                <Card className="group h-full flex flex-col p-0 overflow-hidden border-border hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300">
+                                    <CardContent className="p-0 flex flex-col h-full">
                                         {/* Category Image */}
-                                        <div className="relative w-full h-48 bg-muted rounded-t-lg overflow-hidden">
+                                        <div className="relative w-full h-48 bg-muted overflow-hidden shrink-0">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img
                                                 src={category.logo.secure_url || "/placeholder.jpg"}
                                                 alt={category.name}
-                                                className="w-full h-full object-cover"
+                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                                             />
+                                            <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                         </div>
 
                                         {/* Category Info */}
-                                        <div className="p-4 space-y-3">
-                                            <div className="flex items-start justify-between">
-                                                <div className="flex-1">
-                                                    <h3 className="text-lg font-bold text-foreground">{category.name}</h3>
+                                        <div className="p-5 flex flex-col flex-grow">
+                                            {/* Title & Product Count Section - Fixed min-height for alignment */}
+                                            <div className="flex items-start justify-between min-h-[3.5rem] gap-2 mb-2">
+                                                <h3 className="text-lg font-bold text-foreground line-clamp-2 leading-tight">
+                                                    {category.name}
+                                                </h3>
+                                                <div className="shrink-0 bg-primary/10 text-primary px-2.5 py-1 rounded-full text-xs font-bold">
+                                                    {category?.productNum || 0} Products
                                                 </div>
-                                                <p className="text-md text-muted-foreground">{category?.productNum} product</p>
                                             </div>
 
-                                            <p className="text-xs text-muted-foreground">
-                                                Created: {formatDate(category.createdAt)}
-                                            </p>
+                                            <div className="flex items-center gap-2 mb-5">
+                                                <div className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+                                                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">
+                                                    Created {formatDate(category.createdAt)}
+                                                </p>
+                                            </div>
 
-                                            {/* Action Buttons */}
-                                            <div className="flex gap-2 pt-2 border-t border-border">
+                                            {/* Action Buttons - Pushed to bottom */}
+                                            <div className="mt-auto flex gap-2 pt-4 border-t border-border/60">
                                                 <motion.div whileTap={{ scale: 0.95 }} className="flex-1">
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
-                                                        className="w-full gap-2"
+                                                        className="w-full h-9 gap-2 font-semibold border-border/60 hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-colors"
                                                         onClick={() => onEdit(category._id, category)}
                                                     >
                                                         <Edit24Regular className="w-4 h-4" />
@@ -158,7 +166,7 @@ export default function CategoriesClient() {
                                                     <Button
                                                         variant="destructive"
                                                         size="sm"
-                                                        className="w-full gap-2"
+                                                        className="w-full h-9 gap-2 font-semibold shadow-sm shadow-destructive/20"
                                                         onClick={() => setDeletingCategory(category)}
                                                     >
                                                         <Delete24Regular className="w-4 h-4" />

@@ -94,3 +94,9 @@ export interface ResetPasswordData {
   otp: string
   newPassword: string
 }
+
+
+export interface CategoryCompany {
+  categoryName: string
+  companies: string[]
+}

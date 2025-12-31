@@ -1,6 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist } from "next/font/google";
 // import { Analytics } from "@vercel/analytics/next"
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,7 +10,6 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 
 // تعريف الخطوط
 const geist = Geist({ subsets: ["latin"], weight: "400" });
-const geistMono = Geist_Mono({ subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
   title: "Guevara Admin Dashboard",

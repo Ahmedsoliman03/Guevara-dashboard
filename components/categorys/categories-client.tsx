@@ -15,7 +15,6 @@ import {
 } from "@fluentui/react-icons"
 import useCategory from "@/hooks/use-category"
 import toast from "react-hot-toast"
-import useOrders from "@/hooks/use-orders"
 import { formatDate } from "@/utils/format"
 import EmptyCategory from "@/components/categorys/emptyCategory"
 import Modal from "@/components/ui/Modal"
@@ -28,9 +27,7 @@ export default function CategoriesClient() {
     const [deletingCategory, setDeletingCategory] = useState<Category | null>(null)
     const [singleId, setSingleId] = useState<string>("")
     const { addToCategory, getAllCategory, updateCategory, deleteCategory } = useCategory()
-    const { data: CategoryData, isPending, error } = getAllCategory
-
-    const { sendMessage } = useOrders()
+    const { data: CategoryData, isPending } = getAllCategory
 
     const handleAddSubmit = (data: AddCategoryFormData) => {
         addToCategory.mutate(data, {

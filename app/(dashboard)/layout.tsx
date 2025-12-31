@@ -2,11 +2,9 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { isAuthenticated } from "@/lib/auth"
 import { motion } from "framer-motion"
 import Sidebar from "@/components/layout/sidebar"
 import { CategoriesProvider } from "@/components/providers/categories-provider"
-// import { ProductsProvider } from "@/components/providers/products-provider"
 import { Navigation24Regular, Dismiss24Regular } from "@fluentui/react-icons"
 
 export default function DashboardLayout({
@@ -20,16 +18,12 @@ export default function DashboardLayout({
 
   useEffect(() => {
     setMounted(true)
-    if (typeof window !== "undefined" && !isAuthenticated()) {
-      router.push("/")
-    }
-  }, [router])
+  }, [])
 
   if (!mounted) return null
 
   return (
     <CategoriesProvider>
-      {/* <ProductsProvider> */}
       <div className="flex h-screen bg-background">
         {/* Desktop Sidebar - Fixed and persistent */}
         <div className="hidden md:block">
@@ -72,8 +66,6 @@ export default function DashboardLayout({
           {children}
         </main>
       </div>
-      {/* </ProductsProvider> */}
     </CategoriesProvider>
   )
 }
-

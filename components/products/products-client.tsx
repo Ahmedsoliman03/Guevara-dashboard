@@ -41,7 +41,7 @@ export default function ProductsClient() {
     const { getAllCategory } = useCategory()
     const { data: categoryData } = getAllCategory
     const { getAllProducts, updateProduct, deleteProduct } = useProduct()
-    const { data: products, isPending, error } = getAllProducts({ key: selectedCategory })
+    const { data: products, isPending } = getAllProducts({ key: selectedCategory })
 
     // Filter products by category, company and search term
     const filteredProducts = useMemo(() => {
@@ -69,15 +69,6 @@ export default function ProductsClient() {
 
         return result ? [...result].reverse() : []
     }, [products, selectedCategory, selectedCompany, searchTerm])
-
-    // Number of products
-    const numberofProducts = useMemo(() => {
-        let sum = 0;
-        for (const item of categoryData ?? []) {
-            sum += item.productNum;
-        }
-        return sum
-    }, [categoryData])
 
     // Add product
     const handleAddSubmit = (data: AddProductFormData) => {
@@ -113,7 +104,6 @@ export default function ProductsClient() {
 
     // Update
     const handleEditSubmit = (data: AddProductFormData, id?: string) => {
-        console.log(data);
         if (editingProduct && id) {
             const mainData = {
                 productEnglishName: data.productEnglishName,

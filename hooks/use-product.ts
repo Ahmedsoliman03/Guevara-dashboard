@@ -1,8 +1,6 @@
 "use client"
-import axios from "axios"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useCallback } from "react"
-import { AddProductForApi, Product } from "@/types"
+import { AddProductForApi } from "@/types"
 import api from "@/lib/api"
 
 const useProduct = () => {
@@ -14,7 +12,6 @@ const useProduct = () => {
       queryKey: ["products", { key }],
       queryFn: async () => {
         const res = await api.get("/product");
-        console.log(res.data);
 
         return res.data.data.products;
       },
@@ -53,7 +50,6 @@ const useProduct = () => {
           }
         }
         const res = await api.patch(`/product/${id}`, formData)
-        console.log(res);
 
         return res.data
       },

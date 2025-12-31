@@ -1,9 +1,7 @@
 "use client"
-import axios from "axios"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useCallback } from "react"
 import api from "@/lib/api"
-import { Order, OrderResponse } from "@/types"
+import { Order } from "@/types"
 
 const useOrders = () => {
   const queryClient = useQueryClient()
@@ -72,7 +70,7 @@ const useOrders = () => {
     mutationFn: async (order: Order) => {
       const data = {
         id: order._id,
-        status: "Rejected",
+        status: "Deleted",
       }
       const res = await api.patch(`/order/delete-order`, data)
       return res.data

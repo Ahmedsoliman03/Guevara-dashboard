@@ -1,13 +1,13 @@
 // app/page.tsx
 "use client"
 
-import type React from "react"
+
 
 import { useRouter } from "next/navigation"
 import { Formik, Form, Field, ErrorMessage } from "formik"
 import * as yup from "yup"
 import { motion } from "framer-motion"
-import { validateCredentials, setAuthToken, isAuthenticated } from "@/lib/auth"
+import { setAuthToken } from "@/lib/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PasswordInput } from "@/components/ui/password-input"
@@ -33,12 +33,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     setMounted(true)
-
-    // Redirect if already authenticated
-    if (typeof window !== "undefined" && isAuthenticated()) {
-      router.push("/dashboard")
-    }
-  }, [router])
+  }, [])
 
   const handleSubmit = async (values: AuthCredentials, { setSubmitting, setFieldError }: any) => {
     try {

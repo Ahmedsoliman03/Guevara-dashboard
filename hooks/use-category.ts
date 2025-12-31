@@ -3,7 +3,6 @@ import api from "@/lib/api"
 import { AddCategoryFormData } from "@/lib/validation";
 import { Category, CategoryCompany } from "@/types";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useCallback } from "react"
 
 const useCategory = () => {
   const queryClient = useQueryClient();

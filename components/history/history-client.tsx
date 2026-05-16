@@ -11,6 +11,7 @@ import useOrders from "@/hooks/use-orders"
 import OrderCard from "@/components/dashboard/order-card"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
+import { SITE_CONFIG } from "@/lib/config"
 import { Order } from "@/types"
 import useStatus from "@/hooks/use-status"
 import { jsPDF } from "jspdf"
@@ -59,7 +60,7 @@ export default function HistoryClient() {
         // Add title
         doc.setFontSize(22)
         doc.setTextColor(40)
-        doc.text("Guevara Dashboard", 14, 22)
+        doc.text(`${SITE_CONFIG.name} Dashboard`, 14, 22)
 
         doc.setFontSize(16)
         doc.text(customOrders ? "Monthly Order Report" : "Order History Report", 14, 32)
@@ -82,12 +83,18 @@ export default function HistoryClient() {
         // Map data
         const rows = targetOrders.map(order => ({
             orderId: order.orderId,
-            shippingName: cleanText(order.shippingName),
+            // Fallback to phone if name is Arabic/Non-ASCII and gets cleaned
+            shippingName: cleanText(order.shippingName) || order.phone,
             date: new Date(order.createdAt).toLocaleDateString(),
             status: order.status,
             products: order.products.map(p => `${cleanText(p.name)} (x${p.quantity})`).join('\n'),
             total: `${order.finalPrice} EGP`
         }))
+
+        // Calculate total of delivered orders
+        const deliveredTotal = targetOrders
+            .filter(o => o.status === "Delivered")
+            .reduce((sum, o) => sum + o.finalPrice, 0)
 
         // Generate table
         autoTable(doc, {
@@ -107,10 +114,22 @@ export default function HistoryClient() {
             },
             alternateRowStyles: {
                 fillColor: [245, 245, 245]
+            },
+            didDrawPage: (data) => {
+                // Add footer with total under the table
+                const finalY = data.cursor?.y || 60
+                doc.setFontSize(12)
+                doc.setTextColor(0, 128, 0) // Greenish for success/delivered
+                doc.setFont("helvetica", "bold")
+                doc.text(
+                    `Total of delivered orders = ${deliveredTotal.toLocaleString()} EGP`,
+                    14,
+                    finalY + 15
+                )
             }
         })
 
-        doc.save(`guevara-${fileNamePrefix}-${new Date().toISOString().split('T')[0]}.pdf`)
+        doc.save(`${SITE_CONFIG.name}-${fileNamePrefix}-${new Date().toISOString().split('T')[0]}.pdf`)
 
         // If it was a custom export (monthly), mark it as done
         if (customOrders) {

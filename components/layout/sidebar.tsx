@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { useEffect, useState, useMemo, useCallback } from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { clearAuthToken } from "@/lib/auth"
+import { SITE_CONFIG } from "@/lib/config"
 import {
   Board24Regular,
   Box24Regular,
@@ -93,7 +94,7 @@ function Sidebar({ onNavigate }: SidebarProps) {
     return (
       <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-screen fixed left-0 top-0 z-30">
         <div className="p-6 border-b border-sidebar-border">
-          <h1 className="text-2xl font-bold text-sidebar-primary">Guevara</h1>
+          <h1 className="text-2xl font-bold text-sidebar-primary">{SITE_CONFIG.name}</h1>
           <p className="text-xs text-sidebar-foreground/60">Admin Dashboard</p>
         </div>
       </aside>
@@ -104,7 +105,7 @@ function Sidebar({ onNavigate }: SidebarProps) {
     <aside className="w-64 bg-sidebar border-r border-sidebar-border flex flex-col h-screen fixed left-0 top-0 z-30">
       {/* Header */}
       <div className="p-6 border-b border-sidebar-border">
-        <h1 className="text-2xl font-bold text-sidebar-primary">Guevara</h1>
+        <h1 className="text-2xl font-bold text-sidebar-primary">{SITE_CONFIG.name}</h1>
         <p className="text-xs text-sidebar-foreground/60">Admin Dashboard</p>
       </div>
 

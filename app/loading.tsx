@@ -1,6 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { SITE_CONFIG } from "@/lib/config"
 
 export default function Loading() {
     return (
@@ -12,7 +13,7 @@ export default function Loading() {
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ duration: 0.5, type: "spring" }}
                 >
-                    <h1 className="text-6xl font-bold text-primary mb-2">Guevara</h1>
+                    <h1 className="text-6xl font-bold text-primary mb-2">{SITE_CONFIG.name}</h1>
                     <p className="text-muted-foreground text-sm">Admin Dashboard</p>
                 </motion.div>
 

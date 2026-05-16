@@ -328,12 +328,12 @@ export default function ProductsClient() {
                                     ? "No products available"
                                     : `No products found in ${selectedCategory} category`}
                     </p>
-                    {selectedCategory === "All" && (
+                    {/* {selectedCategory === "All" && (
                         <Button onClick={() => setIsAddModalOpen(true)} className="gap-2">
                             <Add24Regular className="w-5 h-5" />
                             Add Product
                         </Button>
-                    )}
+                    )} */}
                 </motion.div>
             )}
 

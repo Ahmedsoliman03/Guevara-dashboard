@@ -1,6 +1,7 @@
 "use client"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
+import { SITE_CONFIG } from "@/lib/config"
 import { Order } from "@/types"
 
 const useOrders = () => {
@@ -19,17 +20,21 @@ const useOrders = () => {
 
   // send message after order accepted or rejected
   const sendMessage = (userName: string, phone: string, orderId: string, reason?: string) => {
+    // Clean phone number: remove all non-digits and handle Egyptian numbers starting with 0
+    const cleanPhone = phone.replace(/\D/g, '');
+    const formattedPhone = cleanPhone.startsWith('0') && cleanPhone.length === 11 ? `2${cleanPhone}` : cleanPhone;
+
     const message = reason ? `مرحبًا ${userName} 
-نأسف لإبلاغك أن طلبك لدى Guevara (رقم ${orderId}) تم رفضه 
+نأسف لإبلاغك أن طلبك لدى ${SITE_CONFIG.name} (رقم ${orderId}) تم رفضه 
 السبب: ${reason}
 إذا رغبت في مزيد من المعلومات أو إعادة المحاولة، تواصل معنا وسنكون سعداء بالمساعدة.
 شكرًا لتفهمك `
       :
       `مرحبًا ${userName} 
-تم استلام طلبك في Guevara بنجاح وجارٍ الآن تجهيز الطلب 
+تم استلام طلبك في ${SITE_CONFIG.name} بنجاح وجارٍ الآن تجهيز الطلب 
  رقم الطلب: ${orderId}
-شكرًا لثقتك في Guevara `;
-    const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+شكرًا لثقتك في ${SITE_CONFIG.name} `;
+    const url = `https://wa.me/${formattedPhone}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
   };
   // Accept order

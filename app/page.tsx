@@ -15,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AuthCredentials } from "@/types"
 import UseAuth from "@/hooks/useAuth"
 import toast from "react-hot-toast"
+import { SITE_CONFIG } from "@/lib/config"
 import { useEffect, useState } from "react"
 import ForgotPasswordModal from "@/components/auth/ForgotPasswordModal"
 
@@ -66,10 +67,10 @@ export default function LoginPage() {
         <Card className="border-2">
           <CardHeader className="text-center">
             <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: "spring" }}>
-              <h1 className="text-4xl font-bold text-primary mb-2">Guevara</h1>
+              <h1 className="text-4xl font-bold text-primary mb-2">{SITE_CONFIG.name}</h1>
             </motion.div>
             <CardTitle>Admin Dashboard</CardTitle>
-            <CardDescription>Cosmetics Management System</CardDescription>
+            <CardDescription>{SITE_CONFIG.description}</CardDescription>
           </CardHeader>
 
           <CardContent>
@@ -86,7 +87,7 @@ export default function LoginPage() {
                       as={Input}
                       type="email"
                       name="email"
-                      placeholder="admin@guevara.com"
+                      placeholder={`admin@${SITE_CONFIG.name.toLowerCase().replace(/\s+/g, '')}.com`}
                       disabled={isSubmitting}
                     />
                     <ErrorMessage name="email" component="div" className="text-sm text-destructive" />

@@ -11,9 +11,11 @@ import { TooltipProvider } from "@radix-ui/react-tooltip";
 // تعريف الخطوط
 const geist = Geist({ subsets: ["latin"], weight: "400" });
 
+import { SITE_CONFIG } from "@/lib/config";
+
 export const metadata: Metadata = {
-  title: "Guevara Admin Dashboard",
-  description: "Cosmetics management dashboard",
+  title: SITE_CONFIG.description,
+  description: SITE_CONFIG.description,
 };
 
 export default function RootLayout({

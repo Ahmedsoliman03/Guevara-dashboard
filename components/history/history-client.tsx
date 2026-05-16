@@ -84,7 +84,7 @@ export default function HistoryClient() {
         const rows = targetOrders.map(order => ({
             orderId: order.orderId,
             // Fallback to phone if name is Arabic/Non-ASCII and gets cleaned
-            shippingName: cleanText(order.shippingName) || order.phone,
+            shippingName: cleanText(order.shippingName) || (order.phone ? `Phone: ${order.phone}` : "N/A"),
             date: new Date(order.createdAt).toLocaleDateString(),
             status: order.status,
             products: order.products.map(p => `${cleanText(p.name)} (x${p.quantity})`).join('\n'),
@@ -94,7 +94,7 @@ export default function HistoryClient() {
         // Calculate total of delivered orders
         const deliveredTotal = targetOrders
             .filter(o => o.status === "Delivered")
-            .reduce((sum, o) => sum + o.finalPrice, 0)
+            .reduce((sum, o) => sum + (Number(o.finalPrice) || 0), 0)
 
         // Generate table
         autoTable(doc, {
@@ -114,20 +114,19 @@ export default function HistoryClient() {
             },
             alternateRowStyles: {
                 fillColor: [245, 245, 245]
-            },
-            didDrawPage: (data) => {
-                // Add footer with total under the table
-                const finalY = data.cursor?.y || 60
-                doc.setFontSize(12)
-                doc.setTextColor(0, 128, 0) // Greenish for success/delivered
-                doc.setFont("helvetica", "bold")
-                doc.text(
-                    `Total of delivered orders = ${deliveredTotal.toLocaleString()} EGP`,
-                    14,
-                    finalY + 15
-                )
             }
         })
+
+        // Add summary after table
+        const finalY = (doc as any).lastAutoTable.finalY || 60
+        doc.setFontSize(14)
+        doc.setTextColor(0, 128, 0) // Greenish for success/delivered
+        doc.setFont("helvetica", "bold")
+        doc.text(
+            `Total of delivered orders = ${deliveredTotal.toLocaleString()} EGP`,
+            14,
+            finalY + 15
+        )
 
         doc.save(`${SITE_CONFIG.name}-${fileNamePrefix}-${new Date().toISOString().split('T')[0]}.pdf`)
 

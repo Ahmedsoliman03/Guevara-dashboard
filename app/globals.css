@@ -118,9 +118,34 @@
 @layer base {
   * {
     @apply border-border outline-ring/50 transition-colors;
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) transparent;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Custom Scrollbar for Chrome, Safari and Edge */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+    transition: background 0.3s ease;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+    background-clip: content-box;
   }
 }
 

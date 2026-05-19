@@ -91,6 +91,13 @@ export default function HistoryClient() {
             total: `${order.finalPrice} EGP`
         }))
 
+        // Calculate status counts
+        const statusCounts: Record<string, number> = {}
+        targetOrders.forEach(o => {
+            const status = o.status || "Unknown"
+            statusCounts[status] = (statusCounts[status] || 0) + 1
+        })
+
         // Calculate total of delivered orders
         const deliveredTotal = targetOrders
             .filter(o => o.status === "Delivered")
@@ -118,14 +125,41 @@ export default function HistoryClient() {
         })
 
         // Add summary after table
-        const finalY = (doc as any).lastAutoTable.finalY || 60
+        let currentY = (doc as any).lastAutoTable.finalY || 60
+
+        const checkPageFeed = (neededHeight: number) => {
+            const pageHeight = doc.internal.pageSize.height || 297
+            if (currentY + neededHeight > pageHeight - 15) {
+                doc.addPage()
+                currentY = 20
+            }
+        }
+
+        // Print the status counts
+        checkPageFeed(15)
+        currentY += 15
+        doc.setFontSize(12)
+        doc.setTextColor(40)
+        doc.setFont("helvetica", "bold")
+        doc.text("Order Status Summary:", 14, currentY)
+
+        doc.setFont("helvetica", "normal")
+        doc.setFontSize(10)
+        Object.entries(statusCounts).forEach(([status, count]) => {
+            checkPageFeed(6)
+            currentY += 6
+            doc.text(`- ${status}: ${count} ${count === 1 ? 'order' : 'orders'}`, 14, currentY)
+        })
+
+        checkPageFeed(15)
+        currentY += 12
         doc.setFontSize(14)
         doc.setTextColor(0, 128, 0) // Greenish for success/delivered
         doc.setFont("helvetica", "bold")
         doc.text(
             `Total of delivered orders = ${deliveredTotal.toLocaleString()} EGP`,
             14,
-            finalY + 15
+            currentY
         )
 
         doc.save(`${SITE_CONFIG.name}-${fileNamePrefix}-${new Date().toISOString().split('T')[0]}.pdf`)
